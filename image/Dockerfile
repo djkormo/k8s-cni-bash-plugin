@@ -1,1 +1,2 @@
-from bash:latest
+from curlimages/curl:8.2.1
+
