@@ -82,11 +82,17 @@ spec:
         volumeMounts:
         - name: varlog
           mountPath: /var/log
-      terminationGracePeriodSeconds: 30
+          
       volumes:
       - name: varlog
         hostPath:
           path: /var/log
+          
+      terminationGracePeriodSeconds: 30
+      priorityClassName: system-node-critical
+      updateStrategy:
+        type: RollingUpdate
+      
  
   
 
