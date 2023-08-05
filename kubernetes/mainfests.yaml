@@ -2,14 +2,14 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: k8s-cni-bash-manager
+  name: k8s-cni-bash-plugin
   namespace: kube-system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   creationTimestamp: null
-  name: k8s-cni-bash-manager-clusterrole
+  name: k8s-cni-bash-plugin-clusterrole
 rules:
 - apiGroups:
   - ""
@@ -24,14 +24,69 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: k8s-cni-bash-manager-clusterrole
+  name: k8s-cni-bash-plugin-clusterrole
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: k8s-cni-bash-manager-clusterrole
+  name: k8s-cni-bash-plugin-clusterrole
 subjects:
 - kind: ServiceAccount
-  name: k8s-cni-bash-manager
+  name: k8s-cni-bash-plugin
   namespace: kube-system
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: k8s-cni-bash-plugin
+  namespace: kube-system
+  labels:
+    k8s-app: k8s-cni-bash-plugin
+spec:
+  selector:
+    matchLabels:
+      name: k8s-cni-bash-plugin
+  template:
+    metadata:
+      labels:
+        name: k8s-cni-bash-plugin
+    spec:
+      hostNetwork: true
+      restartPolicy: Always
+      serviceAccountName:  k8s-cni-bash-plugin
+      tolerations:
+      # these tolerations are to have the daemonset runnable on control plane nodes
+      # remove them if your control plane nodes should not run pods
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule
+      containers:
+      - name: k8s-cni-bash-plugin
+        image: djkormo/k8s-cni-bash-plugin
+        command: ["/bin/sh", "-c"]
+        args: ["sleep 365d"]
+        env:
+          - name: HOSTNAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: spec.nodeName
+        resources:
+          limits:
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+        volumeMounts:
+        - name: varlog
+          mountPath: /var/log
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: varlog
+        hostPath:
+          path: /var/log
+ 
   
 
