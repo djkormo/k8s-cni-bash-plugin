@@ -90,8 +90,7 @@ spec:
           
       terminationGracePeriodSeconds: 30
       priorityClassName: system-node-critical
-      updateStrategy:
-        type: RollingUpdate
+
       
  
   
