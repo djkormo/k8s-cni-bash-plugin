@@ -2,7 +2,7 @@
 #!/bin/bash
 # Point to the internal API server hostname
 APISERVER=https://kubernetes.default.svc
-APISERVER=$KUBERNETES_PORT_443_TCP_ADDR # for AKS
+APISERVER=$KUBERNETES_PORT_443_TCP_ADDR:KUBERNETES_PORT_443_TCP_PORT # for AKS
 
 # Path to ServiceAccount token
 SERVICEACCOUNT=/var/run/secrets/kubernetes.io/serviceaccount
