@@ -24,7 +24,7 @@ echo "CNI_PATH: $CNI_PATH" | adddate >> $log
 
 case $CNI_COMMAND in
 # Adding network to pod 
-ADD
+ADD)
     podcidr=$(echo $config | jq -r ".podcidr")
     podcidr_gw=$(echo $podcidr | sed "s:0/24:1:g")
 
