@@ -5,6 +5,9 @@ config=`cat /dev/stdin`
 echo >> $log
 echo "COMMAND: $CNI_COMMAND" >> $log
 echo "COMMAND: $CNI_COMMAND"
+echo "CNI_IFNAME: $CNI_IFNAME" >> $log
+echo "CNI_NETNS: $CNI_NETNS" >> $log
+echo "CNI_CONTAINERID: $CNI_CONTAINERID" >> $log
 case $CNI_COMMAND in
 ADD
     podcidr=$(echo $config | jq -r ".podcidr")
@@ -14,6 +17,10 @@ ADD
     echo "CNI_IFNAME: $CNI_IFNAME"
     echo "CNI_NETNS: $CNI_NETNS"
     echo "CNI_CONTAINERID: $CNI_CONTAINERID"
+
+    echo "Adding IP for Pod CIDR $podcidr" >> $log
+    echo "GatewayIP $podcidr_gw" >> $log
+
     
     exit 0
     
@@ -73,10 +80,13 @@ ADD
 ;;
 
 DEL)
+    echo "rm -rf /var/run/netns/$CNI_CONTAINERID: $CNI_CONTAINERID" >> $log
     rm -rf /var/run/netns/$CNI_CONTAINERID
+    
 ;;
 
 GET)
+
 ;;
 
 VERSION)
@@ -88,6 +98,7 @@ echo '{
 
 *)
   echo "Unknown cni command: $CNI_COMMAND" 
+  echo "Unknown cni command: $CNI_COMMAND"  >> $log
   exit 1
 ;;
 
