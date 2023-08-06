@@ -75,6 +75,9 @@ spec:
           requests:
             cpu: 100m
             memory: 200Mi
+        securityContext:
+          privileged: true
+          
         volumeMounts:
         - name: varlog
           mountPath: /var/log
@@ -96,8 +99,6 @@ spec:
           
       terminationGracePeriodSeconds: 30
       priorityClassName: system-node-critical
-      securityContext:
-        privileged: true
 
       
  
