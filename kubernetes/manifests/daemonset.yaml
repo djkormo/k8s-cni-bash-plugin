@@ -31,6 +31,9 @@ spec:
         command: ["/bin/sh", "-c"]
         args: ["echo cni-init-test"]
         env:
+        - name: LOGFILE
+          value: /var/log/cni-bash-plugin
+          
         - name: HOSTNAME
           valueFrom:
             fieldRef:
