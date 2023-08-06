@@ -54,14 +54,10 @@ spec:
       restartPolicy: Always
       serviceAccountName:  k8s-cni-bash-plugin
       tolerations:
-      # these tolerations are to have the daemonset runnable on control plane nodes
-      # remove them if your control plane nodes should not run pods
-      - key: node-role.kubernetes.io/control-plane
+      - effect: NoSchedule
         operator: Exists
-        effect: NoSchedule
-      - key: node-role.kubernetes.io/master
+      - effect: NoExecute
         operator: Exists
-        effect: NoSchedule
       containers:
       - name: k8s-cni-bash-plugin
         image: djkormo/k8s-cni-bash-plugin
