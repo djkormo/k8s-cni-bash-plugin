@@ -57,6 +57,8 @@ spec:
         command: ["/bin/sh", "-c"]
         args: ["sleep 365d"]
         env:
+        - name: LOGFILE
+          value: /var/log/cni-bash-plugin
           - name: HOSTNAME
             valueFrom:
               fieldRef:
