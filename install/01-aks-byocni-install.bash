@@ -76,18 +76,15 @@ az aks get-versions -l $AKS_LOCATION #--query 'orchestrators[-1].orchestratorVer
 
 #AKS_VERSION=$(az aks get-versions -l $AKS_LOCATION --query 'orchestrators[-3].orchestratorVersion' -o tsv)
 
-AKS_NODES=3
+AKS_NODES=2
 
 AKS_VM_SIZE=Standard_B2s
 #AKS_VM_SIZE=Standard_DS3_v2
 
-
-PUBLIC_IP_NAME=myIngressPublicIP
-
 echo "AKS_NAME: $AKS_NAME"
 echo "AKS_LOCATION: $AKS_LOCATION"
 echo "AKS_NODES: $AKS_NODES"
-echo "AKS_VERSION: $AKS_VERSION"
+#echo "AKS_VERSION: $AKS_VERSION"
 echo "AKS_VM_SIZE: $AKS_VM_SIZE"
 
 az account list -o table
