@@ -9,6 +9,8 @@ adddate() {
 
 log=/var/log/cni.log  #$LOGFILE # TODO , should be based on env 
 config=`cat /dev/stdin`
+echo "CNI_CONFIG: $config" | adddate >> $log
+
 
 #set -u
 #set -e
@@ -35,7 +37,7 @@ ADD
     echo "GatewayIP $podcidr_gw" | adddate >> $log
 
     
-    exit 0
+    
     
     brctl addbr cni0
     ip link set cni0 up
@@ -50,6 +52,8 @@ ADD
     n=$(($n+1))
     ip=$(echo $podcidr | sed "s:0/24:$n:g")
     echo $n > /tmp/last_allocated_ip
+
+    exit 0
 
     host_ifname="veth$n"
     ip link add $CNI_IFNAME type veth peer name $host_ifname
