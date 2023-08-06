@@ -42,7 +42,7 @@ ADD)
     
     # calculate $ip
     if [ -f /tmp/last_allocated_ip ]; then
-        n='cat /tmp/last_allocated_ip'
+        n=`cat /tmp/last_allocated_ip`
     else
         n=1
         echo "IP number: $n" | adddate >> $log 
