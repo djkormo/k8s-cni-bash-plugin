@@ -11,7 +11,7 @@ log=/var/log/cni.log  #$LOGFILE # TODO , should be based on env
 config=`cat /dev/stdin`
 echo "CNI_CONFIG: $config" | adddate >> $log
 
-set -u
+#set -u
 #set -e
 
 echo >> $log
@@ -24,6 +24,7 @@ echo "CNI_PATH: $CNI_PATH" | adddate >> $log
 
 case $CNI_COMMAND in
 # Adding network to pod 
+
 ADD)
     podcidr=$(echo $config | jq -r ".podcidr")
     podcidr_gw=$(echo $podcidr | sed "s:0/24:1:g")
@@ -49,7 +50,7 @@ ADD)
     ip=$(echo $podcidr | sed "s:0/24:$n:g")
     echo $n > /tmp/last_allocated_ip
 
-    exit 0
+    #exit 0
 
     host_ifname="veth$n"
     ip link add $CNI_IFNAME type veth peer name $host_ifname
@@ -91,6 +92,7 @@ ADD)
     echo "$output"
     
 ;;
+
 # Deleting network from pod 
 DEL)
     echo "rm -rf /var/run/netns/$CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> $log
