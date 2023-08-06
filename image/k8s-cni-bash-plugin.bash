@@ -1,27 +1,38 @@
 #!/bin/bash
-log=/var/log/cni.log
+
+adddate() {
+    while IFS= read -r line; do
+        printf '%s %s\n' "$(date)" "$line";
+    done
+}
+
+
+log=/var/log/cni.log # TODO , should be based on env 
 config=`cat /dev/stdin`
 
+set -u
+set -e
+
 echo >> $log
-echo "CNI_COMMAND: $CNI_COMMAND" >> $log
-echo "COMMAND: $CNI_COMMAND" >> /proc/1/fd/1
-echo "CNI_IFNAME: $CNI_IFNAME" >> $log
-echo "CNI_NETNS: $CNI_NETNS" >> $log
-echo "CNI_CONTAINERID: $CNI_CONTAINERID" >> $log
+echo "CNI_COMMAND: $CNI_COMMAND" | adddate >> $log
+echo "COMMAND: $CNI_COMMAND" >> | adddate /proc/1/fd/1
+echo "CNI_IFNAME: $CNI_IFNAME" | adddate >> $log
+echo "CNI_NETNS: $CNI_NETNS" | adddate >> $log
+echo "CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> $log
 
 case $CNI_COMMAND in
 # Adding network to pod 
 ADD
     podcidr=$(echo $config | jq -r ".podcidr")
     podcidr_gw=$(echo $podcidr | sed "s:0/24:1:g")
-    echo "Adding IP for Pod CIDR $podcidr" >> /proc/1/fd/1
-    echo "GatewayIP $podcidr_gw" >> /proc/1/fd/1
-    echo "CNI_IFNAME: $CNI_IFNAME" >> /proc/1/fd/1
-    echo "CNI_NETNS: $CNI_NETNS" >> /proc/1/fd/1
-    echo "CNI_CONTAINERID: $CNI_CONTAINERID" >> /proc/1/fd/1
+    echo "Adding IP for Pod CIDR $podcidr" | adddate >> /proc/1/fd/1
+    echo "GatewayIP $podcidr_gw" | adddate >> /proc/1/fd/1
+    echo "CNI_IFNAME: $CNI_IFNAME" | adddate >> /proc/1/fd/1
+    echo "CNI_NETNS: $CNI_NETNS" | adddate >> /proc/1/fd/1
+    echo "CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> /proc/1/fd/1
 
-    echo "Adding IP for Pod CIDR $podcidr" >> $log
-    echo "GatewayIP $podcidr_gw" >> $log
+    echo "Adding IP for Pod CIDR $podcidr" | adddate >> $log
+    echo "GatewayIP $podcidr_gw" | adddate >> $log
 
     
     exit 0
@@ -82,8 +93,8 @@ ADD
 ;;
 # Deleting network from pod 
 DEL)
-    echo "rm -rf /var/run/netns/$CNI_CONTAINERID: $CNI_CONTAINERID" >> $log
-    echo "rm -rf /var/run/netns/$CNI_CONTAINERID: $CNI_CONTAINERID" >> /proc/1/fd/1
+    echo "rm -rf /var/run/netns/$CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> $log
+    echo "rm -rf /var/run/netns/$CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> /proc/1/fd/1
     rm -rf /var/run/netns/$CNI_CONTAINERID
     
 ;;
@@ -100,8 +111,8 @@ echo '{
 ;;
 
 *)
-  echo "Unknown cni command: $CNI_COMMAND"  >> /proc/1/fd/1
-  echo "Unknown cni command: $CNI_COMMAND"  >> $log
+  echo "Unknown cni command: $CNI_COMMAND" | adddate >> /proc/1/fd/1
+  echo "Unknown cni command: $CNI_COMMAND" | adddate >> $log
   exit 1
 ;;
 
