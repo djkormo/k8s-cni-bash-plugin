@@ -32,13 +32,16 @@ ADD
     echo "CNI_IFNAME: $CNI_IFNAME" | adddate >> /proc/1/fd/1 2>> /proc/1/fd/2
     echo "CNI_NETNS: $CNI_NETNS" | adddate >> /proc/1/fd/1 2>> /proc/1/fd/2
     echo "CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> /proc/1/fd/1 2>> /proc/1/fd/2
-
+    echo "CNI_COMMAND: $CNI_COMMAND" | adddate >> $log 
+    echo "Adding IP for Pod CIDR $podcidr" | adddate >> >> $log 
+    echo "GatewayIP $podcidr_gw" | adddate >> $log 
+    echo "CNI_IFNAME: $CNI_IFNAME" | adddate >> $log 
+    echo "CNI_NETNS: $CNI_NETNS" | adddate >> $log 
+    echo "CNI_CONTAINERID: $CNI_CONTAINERID" >> $log 
     echo "Adding IP for Pod CIDR $podcidr" | adddate >> $log
     echo "GatewayIP $podcidr_gw" | adddate >> $log
 
-    
-    
-    
+
     brctl addbr cni0
     ip link set cni0 up
     ip addr add "${podcidr_gw}/24" dev cni0
