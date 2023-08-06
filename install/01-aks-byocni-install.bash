@@ -122,13 +122,10 @@ then
       
       az aks create -n $AKS_NAME -g $AKS_RG -l $AKS_LOCATION \
       
-      --node-vm-size $AKS_VM_SIZE \
-      --node-count $AKS_NODES \
-      --max-pods 250 \
-      --network-plugin none #\
-      #--kubernetes-version $AKS_VERSION \
-     # --vnet-subnet-id $NODE_SUBNET_ID
-
+        --node-vm-size $AKS_VM_SIZE \
+        --node-count $AKS_NODES \
+        --max-pods 250 \
+        --network-plugin none
 
 fi # of create
 
@@ -184,3 +181,9 @@ then
   az aks delete --name $AKS_NAME --resource-group $AKS_RG
 
 fi
+
+az aks get-credentials -n $AKS_NAME  -g $AKS_RG --overwrite
+
+kubectl get nodes
+kubectl get node -o custom-columns='NAME:.metadata.name,STATUS:.status.conditions[?(@.type=="Ready")].message'
+
