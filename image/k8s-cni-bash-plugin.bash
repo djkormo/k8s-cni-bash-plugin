@@ -42,15 +42,18 @@ ADD)
     
     # calculate $ip
     if [ -f /tmp/last_allocated_ip ]; then
-        n=`cat /tmp/last_allocated_ip`
+        n='cat /tmp/last_allocated_ip'
     else
         n=1
+        echo "IP number: $n" | adddate >> $log 
     fi
     n=$(($n+1))
     ip=$(echo $podcidr | sed "s:0/24:$n:g")
     echo $n > /tmp/last_allocated_ip
+    echo "IP $ip, number: $n" | adddate >> $log 
+    
 
-    #exit 0
+    exit 0
 
     host_ifname="veth$n"
     ip link add $CNI_IFNAME type veth peer name $host_ifname
