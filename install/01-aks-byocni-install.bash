@@ -74,17 +74,17 @@ set -e
 
 az aks get-versions -l $AKS_LOCATION #--query 'orchestrators[-1].orchestratorVersion' -o tsv
 
-#AKS_VERSION=$(az aks get-versions -l $AKS_LOCATION --query 'orchestrators[-3].orchestratorVersion' -o tsv)
-
+AKS_VERSION=$(az aks get-versions -l $AKS_LOCATION --query 'orchestrators[-3].orchestratorVersion' -o tsv)
+AKS_VERSION=1.25.11
 AKS_NODES=2
 
-AKS_VM_SIZE=Standard_B2s
-#AKS_VM_SIZE=Standard_DS3_v2
+#AKS_VM_SIZE=Standard_B2s
+AKS_VM_SIZE=Standard_DS3_v2
 
 echo "AKS_NAME: $AKS_NAME"
 echo "AKS_LOCATION: $AKS_LOCATION"
 echo "AKS_NODES: $AKS_NODES"
-#echo "AKS_VERSION: $AKS_VERSION"
+echo "AKS_VERSION: $AKS_VERSION"
 echo "AKS_VM_SIZE: $AKS_VM_SIZE"
 
 az account list -o table
@@ -120,12 +120,12 @@ then
 
       # --network-plugin none > BYOCNI -> cilium 
       
-      az aks create -n $AKS_NAME -g $AKS_RG -l $AKS_LOCATION \
-      
-        --node-vm-size $AKS_VM_SIZE \
+      az aks create -n $AKS_NAME -g $AKS_RG -l $AKS_LOCATION --network-plugin none \
+        --kubernetes-version AKS_VERSION \
+        --node-vm-size $AKS_VM_SIZE \ 
         --node-count $AKS_NODES \
-        --max-pods 250 \
-        --network-plugin none
+        --max-pods 250 
+        
 
 fi # of create
 
