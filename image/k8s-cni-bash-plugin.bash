@@ -7,7 +7,7 @@ adddate() {
 }
 
 
-log=$LOGFILE # TODO , should be based on env 
+log=/var/log/cni.log  #$LOGFILE # TODO , should be based on env 
 config=`cat /dev/stdin`
 
 #set -u
