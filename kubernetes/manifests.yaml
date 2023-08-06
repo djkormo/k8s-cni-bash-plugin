@@ -101,6 +101,11 @@ spec:
             memory: 200Mi
         securityContext:
           privileged: true
+        lifecycle:
+          preStop:
+            exec:
+             command:
+            -sh stop.sh
           
         volumeMounts:
         - name: varlog
