@@ -7,15 +7,15 @@ adddate() {
 }
 
 
-log=/var/log/cni.log # TODO , should be based on env 
+log=$LOGFILE # TODO , should be based on env 
 config=`cat /dev/stdin`
 
-set -u
-set -e
+#set -u
+#set -e
 
 echo >> $log
 echo "CNI_COMMAND: $CNI_COMMAND" | adddate >> $log
-echo "COMMAND: $CNI_COMMAND" >> | adddate /proc/1/fd/1
+echo "CNI_COMMAND: $CNI_COMMAND" | adddate /proc/1/fd/1
 echo "CNI_IFNAME: $CNI_IFNAME" | adddate >> $log
 echo "CNI_NETNS: $CNI_NETNS" | adddate >> $log
 echo "CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> $log
