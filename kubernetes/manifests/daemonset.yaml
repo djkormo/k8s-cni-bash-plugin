@@ -28,8 +28,8 @@ spec:
       - name: k8s-cni-bash-plugin-init
         image: djkormo/k8s-cni-bash-plugin
         imagePullPolicy: Always
-        command: ["/bin/sh", "-c"]
-        args: ["echo init-test"]
+        command:
+          - bash start.sh
         env:
         - name: HOSTNAME
           valueFrom:
@@ -37,16 +37,17 @@ spec:
               apiVersion: v1
               fieldPath: spec.nodeName
                   
-          securityContext:
-            privileged: true
+        securityContext:
+          privileged: true
               
-          volumeMounts:
-          - name: varlog
-            mountPath: /var/log
-          - name: cni-bin
-            mountPath: /opt/cni/bin
-          - name: cni-conf
-            mountPath: /etc/cni/net.d
+        volumeMounts:
+        - name: varlog
+          mountPath: /var/log
+        - name: cni-bin
+          mountPath: /opt/cni/bin
+        - name: cni-conf
+          mountPath: /etc/cni/net.d
+
       containers:
       - name: k8s-cni-bash-plugin
         image: djkormo/k8s-cni-bash-plugin
@@ -66,11 +67,12 @@ spec:
             memory: 200Mi
         securityContext:
           privileged: true
+
         lifecycle:
           preStop:
             exec:
              command:
-            -sh stop.sh
+               -sh stop.sh
           
         volumeMounts:
         - name: varlog
