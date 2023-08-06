@@ -1,4 +1,4 @@
-FROM python:3.7-alpine
+FROM alpine:3.18.2
 LABEL maintainer="Krzysztof Pudlowski <djkormo@gmail.com>" version="1.0.0"
 
 RUN apk --no-cache add  gcc musl-dev curl bash
