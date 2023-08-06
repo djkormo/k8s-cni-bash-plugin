@@ -4,11 +4,19 @@ config=`cat /dev/stdin`
 
 echo >> $log
 echo "COMMAND: $CNI_COMMAND" >> $log
-
+echo "COMMAND: $CNI_COMMAND"
 case $CNI_COMMAND in
-ADD)
+ADD
     podcidr=$(echo $config | jq -r ".podcidr")
     podcidr_gw=$(echo $podcidr | sed "s:0/24:1:g")
+    echo "Adding IP for Pod CIDR $podcidr"
+    echo "GatewayIP $podcidr_gw"
+    echo "CNI_IFNAME: $CNI_IFNAME"
+    echo "CNI_NETNS: $CNI_NETNS"
+    echo "CNI_CONTAINERID: $CNI_CONTAINERID"
+    
+    exit 0
+    
     brctl addbr cni0
     ip link set cni0 up
     ip addr add "${podcidr_gw}/24" dev cni0
