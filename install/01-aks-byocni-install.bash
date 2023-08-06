@@ -121,9 +121,9 @@ then
       
       az aks create -n $AKS_NAME -g $AKS_RG -l $AKS_LOCATION --network-plugin none \
         --kubernetes-version $AKS_VERSION \
-        --node-vm-size $AKS_VM_SIZE \ 
-        --node-count $AKS_NODES \
-        --max-pods 250 
+        --node-vm-size $AKS_VM_SIZE #\ 
+        #--node-count $AKS_NODES \
+        #--max-pods 250 
         
 
 fi # of create
