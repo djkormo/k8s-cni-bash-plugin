@@ -11,7 +11,6 @@ log=/var/log/cni.log  #$LOGFILE # TODO , should be based on env
 config=`cat /dev/stdin`
 echo "CNI_CONFIG: $config" | adddate >> $log
 
-
 set -u
 #set -e
 
@@ -23,40 +22,18 @@ echo "CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> $log
 echo "CNI_ARGS: $CNI_ARGS" | adddate >> $log
 echo "CNI_PATH: $CNI_PATH" | adddate >> $log
 
-echo "CNI_COMMAND: $CNI_COMMAND" | adddate >> /proc/1/fd/1 2>> /proc/1/fd/2
-
-echo "CNI_CONFIG: $config" | adddate
-echo "CNI_COMMAND: $CNI_COMMAND" | adddate
-echo "CNI_IFNAME: $CNI_IFNAME" | adddate
-echo "CNI_NETNS: $CNI_NETNS" | adddate 
-echo "CNI_CONTAINERID: $CNI_CONTAINERID" | adddate 
-echo "CNI_ARGS: $CNI_ARGS" | adddate 
-echo "CNI_PATH: $CNI_PATH" | adddate 
-
 case $CNI_COMMAND in
 # Adding network to pod 
 ADD
     podcidr=$(echo $config | jq -r ".podcidr")
     podcidr_gw=$(echo $podcidr | sed "s:0/24:1:g")
-    echo "Adding IP for Pod CIDR $podcidr" | adddate >> /proc/1/fd/1 2>> /proc/1/fd/2
-    echo "GatewayIP $podcidr_gw" | adddate >> /proc/1/fd/1 2>> /proc/1/fd/2
-    echo "CNI_IFNAME: $CNI_IFNAME" | adddate >> /proc/1/fd/1 2>> /proc/1/fd/2
-    echo "CNI_NETNS: $CNI_NETNS" | adddate >> /proc/1/fd/1 2>> /proc/1/fd/2
-    echo "CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> /proc/1/fd/1 2>> /proc/1/fd/2
+
     echo "CNI_COMMAND: $CNI_COMMAND" | adddate >> $log 
     echo "Adding IP for Pod CIDR $podcidr" | adddate >> $log 
     echo "GatewayIP $podcidr_gw" | adddate >> $log 
     echo "CNI_IFNAME: $CNI_IFNAME" | adddate >> $log 
     echo "CNI_NETNS: $CNI_NETNS" | adddate >> $log 
     echo "CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> $log 
-
-    echo "CNI_COMMAND: $CNI_COMMAND" | adddate 
-    echo "Adding IP for Pod CIDR $podcidr" | adddate 
-    echo "GatewayIP $podcidr_gw" | adddate 
-    echo "CNI_IFNAME: $CNI_IFNAME" | adddate
-    echo "CNI_NETNS: $CNI_NETNS" | adddate 
-    echo "CNI_CONTAINERID: $CNI_CONTAINERID" | adddate 
-    echo "GatewayIP $podcidr_gw" | adddate
 
     brctl addbr cni0
     ip link set cni0 up
@@ -117,7 +94,7 @@ ADD
 # Deleting network from pod 
 DEL)
     echo "rm -rf /var/run/netns/$CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> $log
-    echo "rm -rf /var/run/netns/$CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> /proc/1/fd/1 2>> /proc/1/fd/2
+
     rm -rf /var/run/netns/$CNI_CONTAINERID
     
 ;;
@@ -134,9 +111,8 @@ echo '{
 ;;
 
 *)
-  echo "Unknown CNI_COMMAND: $CNI_COMMAND" | adddate >> /proc/1/fd/1 2>> /proc/1/fd/2
+
   echo "Unknown CNI_COMMAND: $CNI_COMMAND" | adddate >> $log
-  echo "Unknown CNI_COMMAND: $CNI_COMMAND" | adddate
   exit 1
 ;;
 
