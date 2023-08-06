@@ -28,8 +28,8 @@ spec:
       - name: k8s-cni-bash-plugin-init
         image: djkormo/k8s-cni-bash-plugin
         imagePullPolicy: Always
-        command:
-          - bash start.sh
+        command: ["/bin/sh", "-c"]
+        args: ["echo cni-init-test"]
         env:
         - name: HOSTNAME
           valueFrom:
