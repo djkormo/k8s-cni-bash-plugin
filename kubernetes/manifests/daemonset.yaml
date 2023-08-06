@@ -69,10 +69,13 @@ spec:
           privileged: true
 
         lifecycle:
+
           preStop:
             exec:
-             command:
-               -sh stop.sh
+              command: [
+                # shutdown cni
+                "/bin/bash", "-c", "stop.sh"
+              ]
           
         volumeMounts:
         - name: varlog
