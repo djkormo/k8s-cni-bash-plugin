@@ -3,20 +3,22 @@ log=/var/log/cni.log
 config=`cat /dev/stdin`
 
 echo >> $log
-echo "COMMAND: $CNI_COMMAND" >> $log
-echo "COMMAND: $CNI_COMMAND"
+echo "CNI_COMMAND: $CNI_COMMAND" >> $log
+echo "COMMAND: $CNI_COMMAND" >> /proc/1/fd/1
 echo "CNI_IFNAME: $CNI_IFNAME" >> $log
 echo "CNI_NETNS: $CNI_NETNS" >> $log
 echo "CNI_CONTAINERID: $CNI_CONTAINERID" >> $log
+
 case $CNI_COMMAND in
+# Adding network to pod 
 ADD
     podcidr=$(echo $config | jq -r ".podcidr")
     podcidr_gw=$(echo $podcidr | sed "s:0/24:1:g")
-    echo "Adding IP for Pod CIDR $podcidr"
-    echo "GatewayIP $podcidr_gw"
-    echo "CNI_IFNAME: $CNI_IFNAME"
-    echo "CNI_NETNS: $CNI_NETNS"
-    echo "CNI_CONTAINERID: $CNI_CONTAINERID"
+    echo "Adding IP for Pod CIDR $podcidr" >> /proc/1/fd/1
+    echo "GatewayIP $podcidr_gw" >> /proc/1/fd/1
+    echo "CNI_IFNAME: $CNI_IFNAME" >> /proc/1/fd/1
+    echo "CNI_NETNS: $CNI_NETNS" >> /proc/1/fd/1
+    echo "CNI_CONTAINERID: $CNI_CONTAINERID" >> /proc/1/fd/1
 
     echo "Adding IP for Pod CIDR $podcidr" >> $log
     echo "GatewayIP $podcidr_gw" >> $log
@@ -78,9 +80,10 @@ ADD
     echo "$output"
     
 ;;
-
+# Deleting network from pod 
 DEL)
     echo "rm -rf /var/run/netns/$CNI_CONTAINERID: $CNI_CONTAINERID" >> $log
+    echo "rm -rf /var/run/netns/$CNI_CONTAINERID: $CNI_CONTAINERID" >> /proc/1/fd/1
     rm -rf /var/run/netns/$CNI_CONTAINERID
     
 ;;
@@ -97,7 +100,7 @@ echo '{
 ;;
 
 *)
-  echo "Unknown cni command: $CNI_COMMAND" 
+  echo "Unknown cni command: $CNI_COMMAND"  >> /proc/1/fd/1
   echo "Unknown cni command: $CNI_COMMAND"  >> $log
   exit 1
 ;;
