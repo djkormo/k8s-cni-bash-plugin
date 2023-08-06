@@ -15,7 +15,7 @@ config=`cat /dev/stdin`
 
 echo >> $log
 echo "CNI_COMMAND: $CNI_COMMAND" | adddate >> $log
-echo "CNI_COMMAND: $CNI_COMMAND" | adddate /proc/1/fd/1
+echo "CNI_COMMAND: $CNI_COMMAND" | adddate >> /proc/1/fd/1 2>> /proc/1/fd/2
 echo "CNI_IFNAME: $CNI_IFNAME" | adddate >> $log
 echo "CNI_NETNS: $CNI_NETNS" | adddate >> $log
 echo "CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> $log
@@ -25,11 +25,11 @@ case $CNI_COMMAND in
 ADD
     podcidr=$(echo $config | jq -r ".podcidr")
     podcidr_gw=$(echo $podcidr | sed "s:0/24:1:g")
-    echo "Adding IP for Pod CIDR $podcidr" | adddate >> /proc/1/fd/1
-    echo "GatewayIP $podcidr_gw" | adddate >> /proc/1/fd/1
-    echo "CNI_IFNAME: $CNI_IFNAME" | adddate >> /proc/1/fd/1
-    echo "CNI_NETNS: $CNI_NETNS" | adddate >> /proc/1/fd/1
-    echo "CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> /proc/1/fd/1
+    echo "Adding IP for Pod CIDR $podcidr" | adddate >> /proc/1/fd/1 2>> /proc/1/fd/2
+    echo "GatewayIP $podcidr_gw" | adddate >> /proc/1/fd/1 2>> /proc/1/fd/2
+    echo "CNI_IFNAME: $CNI_IFNAME" | adddate >> /proc/1/fd/1 2>> /proc/1/fd/2
+    echo "CNI_NETNS: $CNI_NETNS" | adddate >> /proc/1/fd/1 2>> /proc/1/fd/2
+    echo "CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> /proc/1/fd/1 2>> /proc/1/fd/2
 
     echo "Adding IP for Pod CIDR $podcidr" | adddate >> $log
     echo "GatewayIP $podcidr_gw" | adddate >> $log
@@ -94,7 +94,7 @@ ADD
 # Deleting network from pod 
 DEL)
     echo "rm -rf /var/run/netns/$CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> $log
-    echo "rm -rf /var/run/netns/$CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> /proc/1/fd/1
+    echo "rm -rf /var/run/netns/$CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> /proc/1/fd/1 2>> /proc/1/fd/2
     rm -rf /var/run/netns/$CNI_CONTAINERID
     
 ;;
@@ -111,7 +111,7 @@ echo '{
 ;;
 
 *)
-  echo "Unknown cni command: $CNI_COMMAND" | adddate >> /proc/1/fd/1
+  echo "Unknown cni command: $CNI_COMMAND" | adddate >> /proc/1/fd/1 2>> /proc/1/fd/2
   echo "Unknown cni command: $CNI_COMMAND" | adddate >> $log
   exit 1
 ;;
