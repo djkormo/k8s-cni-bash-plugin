@@ -32,7 +32,7 @@ spec:
         args: ["echo cni-init-test"]
         env:
         - name: LOGFILE
-          value: /var/log/cni-bash-plugin
+          value: /var/log/cni.log
           
         - name: HOSTNAME
           valueFrom:
@@ -58,7 +58,7 @@ spec:
         args: ["sleep 365d"]
         env:
         - name: LOGFILE
-          value: /var/log/cni-bash-plugin
+          value: /var/log/cni.log
         - name: HOSTNAME
           valueFrom:
             fieldRef:
