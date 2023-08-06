@@ -12,7 +12,7 @@ config=`cat /dev/stdin`
 echo "CNI_CONFIG: $config" | adddate >> $log
 
 
-#set -u
+set -u
 #set -e
 
 echo >> $log
@@ -20,6 +20,8 @@ echo "CNI_COMMAND: $CNI_COMMAND" | adddate >> $log
 echo "CNI_IFNAME: $CNI_IFNAME" | adddate >> $log
 echo "CNI_NETNS: $CNI_NETNS" | adddate >> $log
 echo "CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> $log
+echo "CNI_ARGS: $CNI_ARGS" | adddate >> $log
+echo "CNI_PATH: $CNI_PATH" | adddate >> $log
 
 echo "CNI_COMMAND: $CNI_COMMAND" | adddate >> /proc/1/fd/1 2>> /proc/1/fd/2
 
@@ -28,6 +30,8 @@ echo "CNI_COMMAND: $CNI_COMMAND" | adddate
 echo "CNI_IFNAME: $CNI_IFNAME" | adddate
 echo "CNI_NETNS: $CNI_NETNS" | adddate 
 echo "CNI_CONTAINERID: $CNI_CONTAINERID" | adddate 
+echo "CNI_ARGS: $CNI_ARGS" | adddate 
+echo "CNI_PATH: $CNI_PATH" | adddate 
 
 case $CNI_COMMAND in
 # Adding network to pod 
