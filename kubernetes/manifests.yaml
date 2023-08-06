@@ -53,6 +53,8 @@ spec:
       hostNetwork: true
       restartPolicy: Always
       serviceAccountName:  k8s-cni-bash-plugin
+      securityContext:
+        privileged: true
       tolerations:
       - effect: NoSchedule
         operator: Exists
