@@ -1,7 +1,7 @@
 FROM alpine:3.18.2
-LABEL maintainer="Krzysztof Pudlowski <djkormo@gmail.com>" version="1.0.0"
+LABEL maintainer="Krzysztof Pudlowski <djkormo@gmail.com>" version="0.0.1"
 
-RUN apk --no-cache add  gcc musl-dev curl bash
+RUN apk --no-cache add curl bash
 
 COPY k8s-api-check.bash k8s-api-check.bash
 COPY 10-k8s-cni-bash-plugin.conf 10-k8s-cni-bash-plugin.conf
