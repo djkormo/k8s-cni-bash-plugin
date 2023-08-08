@@ -2,6 +2,7 @@
 
 if [[ ${DEBUG} -gt 0 ]]; then set -x; fi
 
+
 # based on
 
 #https://github.com/s-matyukevich/bash-cni-plugin/blob/master/bash-cni
@@ -38,6 +39,8 @@ IP_STORE=/tmp/reserved_ips # all reserved ips will be stored there
 log=/var/log/cni.log  #$LOGFILE # TODO , should be based on env 
 config=`cat /dev/stdin`
 echo "CNI_CONFIG: $config" | adddate >> $log
+
+echo "PATH: ${PATH}" | adddate >> $log
 
 #set -u
 #set -e
