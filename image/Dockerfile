@@ -11,5 +11,9 @@ COPY k8s-cni-bash-plugin.bash k8s-cni-bash-plugin.bash
 COPY start.sh start.sh
 COPY stop.sh stop.sh
 
+RUN chmod +x /cni/*.bash
+RUN chmod +x /cni/*.sh
+
+
 
 
