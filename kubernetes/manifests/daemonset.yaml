@@ -28,8 +28,7 @@ spec:
       - name: k8s-cni-bash-plugin-init
         image: djkormo/k8s-cni-bash-plugin
         imagePullPolicy: Always
-        command: ["/bin/sh", "-c"]
-        args: ["echo start-cni"]
+        command: ["/cni/start.sh"]
         env:
         - name: LOGFILE
           value: /var/log/cni.log
@@ -79,7 +78,7 @@ spec:
             exec:
               command: [
                 # shutdown cni
-                "/bin/bash", "-c", "echo stop-cni"
+                "/cni/stop.sh"
               ]
           
         volumeMounts:
