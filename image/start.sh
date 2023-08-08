@@ -1,9 +1,9 @@
 #!/bin/sh
 
 echo "Initialising CNI bash plugin"
-
+echo "PATH: ${PATH}"
 echo "======== Configuration ========="
-cat 10-k8s-cni-bash-plugin.conf
+cat /cni/10-k8s-cni-bash-plugin.conf
 echo "======== Configuration ========="
 
 cp /cni/10-k8s-cni-bash-plugin.conf /etc/cni/net.d/10-k8s-cni-bash-plugin.conf
@@ -16,6 +16,6 @@ ls -la  /opt/cni/bin/
 echo "====== Installed cni plugings ==========="
 
 echo "========== Checking log file $LOGFILE =========="
-tail $LOGFILE
+tail ${LOGFILE}
 echo "========== Checking log file $LOGFILE =========="
 
