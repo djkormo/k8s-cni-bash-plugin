@@ -59,17 +59,21 @@ case $CNI_COMMAND in
 ADD)
     podcidr=$(echo $config | jq -r ".podcidr")
     podcidr_gw=$(echo $podcidr | sed "s:0/24:1:g")
-
+    subnet_mask_size=$(echo $podcidr | awk -F  "/" '{print $2}')7
     echo "CNI_COMMAND: $CNI_COMMAND" | adddate >> $log 
     echo "Adding IP for Pod CIDR $podcidr" | adddate >> $log 
     echo "GatewayIP $podcidr_gw" | adddate >> $log 
+    echo "IP Mask $subnet_mask_size" | adddate >> $log 
     echo "CNI_IFNAME: $CNI_IFNAME" | adddate >> $log 
     echo "CNI_NETNS: $CNI_NETNS" | adddate >> $log 
     echo "CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> $log 
 
-    brctl addbr cni0
-    ip link set cni0 up
-    ip addr add "${podcidr_gw}/24" dev cni0
+    #brctl addbr cni0
+    #ip link set cni0 up
+    #ip addr add "${podcidr_gw}/24" dev cni0
+
+    mkdir -p /var/run/netns/
+    ln -sfT $CNI_NETNS /var/run/netns/$CNI_CONTAINERID
     
     # calculate $ip
     if [ -f /tmp/last_allocated_ip ]; then
@@ -84,8 +88,6 @@ ADD)
     echo "IP $ip, number: $n" | adddate >> $log 
     
 
-    exit 0
-
     host_ifname="veth$n"
     ip link add $CNI_IFNAME type veth peer name $host_ifname
     ip link set $host_ifname up
@@ -98,6 +100,8 @@ ADD)
     ip netns exec $CNI_CONTAINERID ip link set $CNI_IFNAME up
     ip netns exec $CNI_CONTAINERID ip addr add $ip/24 dev $CNI_IFNAME
     ip netns exec $CNI_CONTAINERID ip route add default via $podcidr_gw
+
+    exit 0	
 
     mac=$(ip netns exec $CNI_CONTAINERID ip link show eth0 | awk '/ether/ {print $2}')
     address="${ip}/24"
