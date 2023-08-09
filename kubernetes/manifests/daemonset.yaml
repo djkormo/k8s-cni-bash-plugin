@@ -59,7 +59,7 @@ spec:
         - name: PODNETWORK  # IP of APP pods
           value: "10.240.0.0/16"
         - name: NODEMASK  # CIDR mask for single node 10.240.0.0/24, 10.240.1.0/24, 10.240.2.0/24, ...
-          value: 24 
+          value: "24" 
         - name: LOGFILE
           value: /var/log/cni.log
         - name: HOSTNAME
