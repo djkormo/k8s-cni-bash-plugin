@@ -53,7 +53,7 @@ echo "CNI_NETNS: $CNI_NETNS" | adddate >> $log
 echo "CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> $log
 echo "CNI_ARGS: $CNI_ARGS" | adddate >> $log
 echo "CNI_PATH: $CNI_PATH" | adddate >> $log
-echo "IP temp file: $CNI_PATH" | adddate >> $log
+echo "IP temp file: $ip_file" | adddate >> $log
 
 case $CNI_COMMAND in
 # Adding network to pod 
