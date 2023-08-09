@@ -3,4 +3,4 @@
 git pull
 make
 make publish-version
-make publisz-latest
+make publish-latest
