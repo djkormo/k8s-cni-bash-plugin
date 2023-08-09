@@ -2,6 +2,7 @@
 
 if [[ ${DEBUG} -gt 0 ]]; then set -x; fi
 
+ip_file=/tmp/last_allocated_ip
 
 # based on
 
@@ -52,6 +53,7 @@ echo "CNI_NETNS: $CNI_NETNS" | adddate >> $log
 echo "CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> $log
 echo "CNI_ARGS: $CNI_ARGS" | adddate >> $log
 echo "CNI_PATH: $CNI_PATH" | adddate >> $log
+echo "IP temp file: $CNI_PATH" | adddate >> $log
 
 case $CNI_COMMAND in
 # Adding network to pod 
@@ -76,15 +78,15 @@ ADD)
     ln -sfT $CNI_NETNS /var/run/netns/$CNI_CONTAINERID
     
     # calculate $ip
-    if [ -f /tmp/last_allocated_ip ]; then
-        n=`cat /tmp/last_allocated_ip`
+    if [ -f $ip_file ]; then
+        n=`cat $ip_file`
     else
         n=1
         echo "IP number: $n" | adddate >> $log 
     fi
     n=$(($n+1))
     ip=$(echo $podcidr | sed "s:0/24:$n:g")
-    echo $n > /tmp/last_allocated_ip
+    echo $n > $ip_file
     echo "IP $ip, number: $n" | adddate >> $log 
     
 
