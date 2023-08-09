@@ -77,8 +77,8 @@ az aks get-versions -l $AKS_LOCATION #--query 'orchestrators[-1].orchestratorVer
 AKS_VERSION=1.25.11
 AKS_NODES=2
 
-#AKS_VM_SIZE=Standard_B2s
-AKS_VM_SIZE=Standard_DS3_v2
+AKS_VM_SIZE=Standard_B2s
+#AKS_VM_SIZE=Standard_DS3_v2
 
 echo "AKS_NAME: $AKS_NAME"
 echo "AKS_LOCATION: $AKS_LOCATION"
