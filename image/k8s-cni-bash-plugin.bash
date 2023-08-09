@@ -70,13 +70,6 @@ ADD)
     echo "CNI_NETNS: $CNI_NETNS" | adddate >> $log 
     echo "CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> $log 
 
-    #brctl addbr cni0
-    #ip link set cni0 up
-    #ip addr add "${podcidr_gw}/24" dev cni0
-
-    #mkdir -p /var/run/netns/
-    #ln -sfT $CNI_NETNS /var/run/netns/$CNI_CONTAINERID
-    
     # calculate $ip
     if [ -f $ip_file ]; then
         n=`cat $ip_file`
