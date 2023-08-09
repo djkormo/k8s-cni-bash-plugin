@@ -18,6 +18,11 @@ chroot /host
 journalctl -u kubelet 
 ```
 
+
+kubectl -n kube-system  exec ds/k8s-cni-bash-plugin -it -- bash
+kubectl -n kube-system  logs ds/k8s-cni-bash-plugin -c k8s-cni-bash-plugin-init
+kubectl -n kube-system  logs ds/k8s-cni-bash-plugin -c k8s-cni-bash-plugin
+
 Literature:
 https://nicovibert.com/2022/10/03/how-to-ssh-into-aks-nodes-with-extra-privileges/
 
