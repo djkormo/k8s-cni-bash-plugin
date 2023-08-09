@@ -74,8 +74,8 @@ ADD)
     #ip link set cni0 up
     #ip addr add "${podcidr_gw}/24" dev cni0
 
-    mkdir -p /var/run/netns/
-    ln -sfT $CNI_NETNS /var/run/netns/$CNI_CONTAINERID
+    #mkdir -p /var/run/netns/
+    #ln -sfT $CNI_NETNS /var/run/netns/$CNI_CONTAINERID
     
     # calculate $ip
     if [ -f $ip_file ]; then
