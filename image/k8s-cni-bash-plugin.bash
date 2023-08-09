@@ -84,9 +84,9 @@ ADD)
 
     rand=$(tr -dc 'A-F0-9' < /dev/urandom | head -c4)
     host_if_name="veth$rand"
-    ip link add $CNI_IFNAME type veth peer name $host_if_name
-    
-    ip link set $host_ifname up
+    ip link add $CNI_IFNAME type veth peer name $host_if_name  --ignore-errors
+   
+    ip link set $host_ifname up  --ignore-errors
 
     mkdir -p /var/run/netns/
     ip link set $host_ifname master cni0
