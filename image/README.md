@@ -19,10 +19,14 @@ https://github.com/s-matyukevich/bash-cni-plugin/blob/master/bash-cni
 ### Movie
 
 https://www.youtube.com/watch?v=zmYxdtFzK6s
+https://www.youtube.com/watch?v=YjjrQiJOyME
+
 
 ### Presentation
 
 https://speakerdeck.com/eranyanay/writing-a-cni-plugin-from-scratch
+
+https://static.sched.com/hosted_files/kccncna19/69/CNI%20Intro%20Nov%202019.pdf
 
 ### Source code
 https://github.com/eranyanay/cni-from-scratch/blob/master/my-cni-demo
