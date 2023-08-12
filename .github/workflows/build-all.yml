@@ -3,16 +3,13 @@ name: project operator pipeline
 on:
   push:
     paths:
-      - 'charts/*.yaml'
-      - 'deploy/*.yaml'
-      - 'test/*.yaml'
+      - 'image/*.sh'
+      - 'image/*.bash'
       - '**.bash'
-      - '**.py'
+      - '**.sh'
       - 'Dockerfile'
 
-
 jobs:
-
 
   buildDocker:
     runs-on: ubuntu-latest
