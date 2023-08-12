@@ -1,0 +1,103 @@
+name: project operator pipeline
+
+on:
+  push:
+    paths:
+      - 'charts/*.yaml'
+      - 'deploy/*.yaml'
+      - 'test/*.yaml'
+      - '**.bash'
+      - '**.py'
+      - 'Dockerfile'
+
+
+jobs:
+  validateKubernetesManifests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: validate manifests in ./deploy directory
+        uses: instrumenta/kubeval-action@master
+        with:
+          files: ./deploy
+
+          
+  validateHelmCharts:
+    needs: validateKubernetesManifests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run Kubernetes tools
+        uses: grebois/kube-tools@v1.5.2
+        with:
+          kubectl: 1.20.7
+          kustomize: 3.5.5
+          helm: 2.16.7
+          helmv3: 3.2.1
+          kubeseal: 0.12.5
+          kubeaudit: 0.11.5
+          command: |
+            echo "Run kubeval for manifests"
+            kubeval --strict --ignore-missing-schemas -d ./deploy/
+            echo "Run kubeval for helm"
+            helmv3 template ./charts/project-operator | kubeval --strict --ignore-missing-schemas
+
+
+
+  buildDocker:
+    needs: validateHelmCharts
+    runs-on: ubuntu-latest
+    env:
+      APP_NAME: djkormo-project-operator
+
+    steps:
+    - uses: actions/checkout@v2
+      name: Checkout
+      with:
+        ref: main
+      
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v3
+      with:
+      # list of Docker images to use as base name for tags
+        images: |
+          djkormo/project-operator
+        # generate Docker tags based on the following events/attributes
+        tags: |
+          type=schedule
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=semver,pattern={{major}}
+          type=sha
+          
+    - name: Login to DockerHub
+      if: github.event_name != 'pull_request'
+      uses: docker/login-action@v1 
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        
+    - name: Build and push
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+      
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: djkormo/project-operator:main
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'CRITICAL,HIGH'
+
+
+
