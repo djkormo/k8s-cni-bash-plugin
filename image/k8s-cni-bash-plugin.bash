@@ -13,7 +13,7 @@ ip_file=/tmp/last_allocated_ip
 
 # Direct file descriptors 1 and 2 to log file, and file descriptor 3 to stdout
 exec 3>&1
-exec &>>/var/log//var/log/cni.log
+exec &>>/var/log/cni.log
 
 # Write line to log file (file descriptor 1 is redirected to log file)
 logger() {
