@@ -6,8 +6,20 @@ ip_file=/tmp/last_allocated_ip
 
 # based on
 
-#https://github.com/s-matyukevich/bash-cni-plugin/blob/master/bash-cni
-#https://github.com/eranyanay/cni-from-scratch/blob/master/my-cni-demo
+# https://github.com/s-matyukevich/bash-cni-plugin/blob/master/bash-cni
+# https://github.com/eranyanay/cni-from-scratch/blob/master/my-cni-demo
+# https://github.com/learnk8s/advanced-networking/blob/master/my-cni-plugin
+
+
+# Direct file descriptors 1 and 2 to log file, and file descriptor 3 to stdout
+exec 3>&1
+exec &>>/var/log//var/log/cni.log
+
+# Write line to log file (file descriptor 1 is redirected to log file)
+logger() {
+  echo -e "$(date): $*"
+}
+
 
 adddate() {
     while IFS= read -r line; do
@@ -54,6 +66,8 @@ echo "CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> $log
 echo "CNI_ARGS: $CNI_ARGS" | adddate >> $log
 echo "CNI_PATH: $CNI_PATH" | adddate >> $log
 echo "IP temp file: $ip_file" | adddate >> $log
+
+logger "CNI_COMMAND=$CNI_COMMAND, CNI_CONTAINERID=$CNI_CONTAINERID, CNI_NETNS=$CNI_NETNS, CNI_IFNAME=$CNI_IFNAME, CNI_PATH=$CNI_PATH\n$netconf"
 
 case $CNI_COMMAND in
 # Adding network to pod 
