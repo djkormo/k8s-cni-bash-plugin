@@ -50,9 +50,9 @@ IP_STORE=/tmp/reserved_ips # all reserved ips will be stored there
 
 #exec 3>&1 # make stdout available as fd 3 for the result
 log=/var/log/cni.log  #$LOGFILE # TODO , should be based on env 
-config=`cat /dev/stdin`
+cniconf=`cat /dev/stdin`
 
-echo "CNI_CONFIG: $config" | adddate >> $log
+echo "CNI_CONFIG: $cniconf" | adddate >> $log
 echo "PATH: ${PATH}" | adddate >> $log
 
 #set -u
@@ -73,17 +73,29 @@ case $CNI_COMMAND in
 # Adding network to pod 
 
 ADD)
-    podcidr=$(echo $config | jq -r ".podcidr")
+    podcidr=$(echo $cniconf | jq -r ".podcidr")
     podcidr_gw=$(echo $podcidr | sed "s:0/24:1:g")
-    subnet_mask_size=$(echo $podcidr | awk -F  "/" '{print $2}')7
+    subnet_mask_size=$(echo $podcidr | awk -F  "/" '{print $2}')
+    
+    # Prepare NetConf for host-local IPAM plugin (add 'ipam' field)
+    ipam_netconf=$(jq ". += {ipam:{subnet:\"$pod_subnet\"}}" <<<"$cniconf")
+
+    ipam_response=$(/opt/cni/bin/host-local <<<"$ipam_netconf")
+
+    # Extract IP addresses for Pod and gateway (bridge) from IPAM response
+    pod_ip=$(jq -r '.ips[0].address' <<<"$ipam_response")
+    bridge_ip=$(jq -r '.ips[0].gateway' <<<"$ipam_response")
+    
     echo "CNI_COMMAND: $CNI_COMMAND" | adddate >> $log 
     echo "Adding IP for Pod CIDR $podcidr" | adddate >> $log 
     echo "GatewayIP $podcidr_gw" | adddate >> $log 
     echo "IP Mask $subnet_mask_size" | adddate >> $log 
     echo "CNI_IFNAME: $CNI_IFNAME" | adddate >> $log 
     echo "CNI_NETNS: $CNI_NETNS" | adddate >> $log 
-    echo "CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> $log 
-
+    echo "CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> $log  
+    echo "IPAM pod_ip: $pod_ip" | adddate >> $log
+    echo "IPAM bridge_ip: $bridge_ip" | adddate >> $log
+	 
     # calculate $ip
     if [ -f $ip_file ]; then
         n=`cat $ip_file`
