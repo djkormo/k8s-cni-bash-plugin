@@ -14,6 +14,3 @@ COPY check-cni.bash check-cni.bash
 RUN chmod +x /cni/*.bash
 RUN chmod +x /cni/*.sh
 
-
-
-
