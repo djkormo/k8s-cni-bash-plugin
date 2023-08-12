@@ -26,7 +26,7 @@ spec:
 
       initContainers:
       - name: k8s-cni-bash-plugin-init
-        image: djkormo/k8s-cni-bash-plugin
+        image: djkormo/k8s-cni-bash-plugin:main
         imagePullPolicy: Always
         command: ["/cni/start.sh"]
         env:
