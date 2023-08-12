@@ -5,6 +5,7 @@ on:
     paths:
       - 'image/*.sh'
       - 'image/*.bash'
+      - 'image/*.conf'
       - '**.bash'
       - '**.sh'
       - 'Dockerfile'
