@@ -1,10 +1,12 @@
 #!/bin/sh
 
+
 echo "Initialising CNI bash plugin"
 echo "PATH: ${PATH}"
 echo "======== Configuration ========="
 cat /cni/10-k8s-cni-bash-plugin.conf
 echo "======== Configuration ========="
+export $(cat 10-k8s-cni-bash-plugin.env)
 
 cp /cni/10-k8s-cni-bash-plugin.conf /etc/cni/net.d/10-k8s-cni-bash-plugin.conf
 
