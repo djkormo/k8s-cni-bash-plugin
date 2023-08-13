@@ -126,13 +126,14 @@ ADD)
         logger "Not needed to configure bridge : $bridge_interface"
       fi	
     
-
       # Allow forwarding of packets in default network namespace to/from Pods
+      logger "Allow forwarding of packets in default network namespace to/from Pods: $podcidr"
       ensure iptables -A FORWARD -s "$podcidr" -j ACCEPT
       ensure iptables -A FORWARD -d "$podcidr" -j ACCEPT
 
       # Set up NAT for traffic leaving the cluster (replace Pod IP with node IP)
-      ensure iptables -t nat -N MY_CNI_MASQUERADE &>/dev/null
+      logger "Set up NAT for traffic leaving the cluster (replace Pod IP with node IP): $podcidr, $host_network"
+      iptables -t nat -N MY_CNI_MASQUERADE &>/dev/null
       ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$podcidr" -j RETURN
       ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$host_network" -j RETURN
       ensure iptables -t nat -A MY_CNI_MASQUERADE -j MASQUERADE
@@ -141,6 +142,7 @@ ADD)
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
       # End of critical section
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+      logger "End of critical section: $podcidr, $host_network"
     #}  # 100>/tmp/k8s-cni-bash-plugin.lock
 
     #--------------------------------------------------------------------------#
