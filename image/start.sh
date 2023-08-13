@@ -6,7 +6,7 @@ echo "PATH: ${PATH}"
 
 echo "======== Configuration ========="
 cat /cni/10-k8s-cni-bash-plugin.conf
-export $(cat 10-k8s-cni-bash-plugin.env)
+export $(cat k8s-cni-bash-plugin.env)
 printenv | grep CNI
 echo "======== Configuration ========="
 
