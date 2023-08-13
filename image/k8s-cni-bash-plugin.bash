@@ -50,7 +50,7 @@ allocate_ip(){
 IP_STORE=/tmp/reserved_ips # all reserved ips will be stored there
 
 #exec 3>&1 # make stdout available as fd 3 for the result
-log=$CNI_LOGFILE #$CNI_LOGFILE # TODO , should be based on env 
+log=/var/log/cni.log #$CNI_LOGFILE # TODO , should be based on env 
 cniconf=`cat /dev/stdin`
 
 echo "CNI_CONFIG: $cniconf" | adddate >> $log
