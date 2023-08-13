@@ -4,7 +4,7 @@ metadata:
   name: k8s-cni-bash-plugin-configmap
   namespace: kube-system
 data:
-  config_develop.json: |
+  10-k8s-cni-bashplugin.conf: |
     {
         "current_env" : "gcp-development-minikube",
         "Directory_Type" : "folder",
@@ -14,13 +14,4 @@ data:
         "Output_Environment_Location" : "test_ds",
         "report_location": "reports"
     }
-  10-k8s-cni-bashplugin.conf: |
-     {
-      "cniVersion": "0.3.1",
-      "name": "k8s-cni-bash-plugin",
-      "type": "k8s-cni-bash-plugin",
-      "bridge": "cni0",
-      "network": "10.240.0.0/16",
-      "podcidr": "10.240.0.0/24"
-    }
-    
+
