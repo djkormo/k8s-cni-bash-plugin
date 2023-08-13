@@ -113,7 +113,6 @@ ADD)
     rand=$(tr -dc 'A-F0-9' < /dev/urandom | head -c4)
     host_if_name="veth$rand"
     ip link add $CNI_IFNAME type veth peer name $host_if_name  --ignore-errors
-   
     ip link set $host_ifname up  --ignore-errors
 
     mkdir -p /var/run/netns/
@@ -122,13 +121,12 @@ ADD)
     ip link set $CNI_IFNAME netns $CNI_CONTAINERID
 
     ip netns exec $CNI_CONTAINERID ip link set $CNI_IFNAME up
-    ip netns exec $CNI_CONTAINERID ip addr add $ip/24 dev $CNI_IFNAME
+    ip netns exec $CNI_CONTAINERID ip addr add $pod_ip/24 dev $CNI_IFNAME
     ip netns exec $CNI_CONTAINERID ip route add default via $podcidr_gw
 
-    exit 0	
 
     mac=$(ip netns exec $CNI_CONTAINERID ip link show eth0 | awk '/ether/ {print $2}')
-    address="${ip}/24"
+    address="${pod_ip}/24"
     output_template='
 {
   "cniVersion": "0.3.1",
@@ -152,7 +150,8 @@ ADD)
     output=$(printf "${output_template}" $CNI_IFNAME $mac $CNI_NETNS $address $podcidr_gw)
     echo $output >> $log
     echo "$output"
-    
+	
+    #exit 0	    
 ;;
 
 # Deleting network from pod 
