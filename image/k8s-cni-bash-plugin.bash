@@ -174,7 +174,7 @@ ADD)
 
     # Create veth pair in Pod network namespace
     rand=$(tr -dc 'A-F0-9' < /dev/urandom | head -c4)
-    host_if_name="veth$rand"
+    host_if_name=veth$rand
     logger "Create veth pair in Pod network namespace: ip netns exec "$CNI_CONTAINERID" ip link add "$CNI_IFNAME" type veth peer name $host_ifname"
     ip netns exec "$CNI_CONTAINERID" ip link add "$CNI_IFNAME" type veth peer name $host_ifname
 
