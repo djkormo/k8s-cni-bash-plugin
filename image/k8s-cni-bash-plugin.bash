@@ -53,14 +53,13 @@ IP_STORE=/tmp/reserved_ips # all reserved ips will be stored there
 log=/var/log/cni.log #$CNI_LOGFILE # TODO , should be based on env 
 cniconf=`cat /dev/stdin`
 
-echo "CNI_CONFIG: $cniconf" | adddate >> $log
-echo "PATH: ${PATH}" | adddate >> $log
-echo "CNI_LOGFILE: ${CNI_LOGFILE}" | adddate >> $log
+logger "CNI_CONFIG: $cniconf" 
+logger "PATH: ${PATH}"
+logger "CNI_LOGFILE: ${CNI_LOGFILE}"
 
 #set -u
 #set -e
 
-echo >> $log
 logger "CNI_COMMAND: $CNI_COMMAND" 
 logger "CNI_IFNAME: $CNI_IFNAME" 
 logger "CNI_NETNS: $CNI_NETNS" 
@@ -85,30 +84,34 @@ ADD)
     ipam_response=$(/opt/cni/bin/host-local <<<"$ipam_netconf")
     logger "ipam_response: $ipam_response"
     # Extract IP addresses for Pod and gateway (bridge) from IPAM response
-    pod_ip=$(jq -r '.ips[0].address' <<<"$ipam_response")
-    bridge_ip=$(jq -r '.ips[0].gateway' <<<"$ipam_response")
+    ipam_pod_ip=$(jq -r '.ips[0].address' <<<"$ipam_response")
+    ipam_bridge_ip=$(jq -r '.ips[0].gateway' <<<"$ipam_response")
+    ipam_code=$(jq -r '.code' <<<"$ipam_response")
+    ipam_msg=$(jq -r '.msg' <<<"$ipam_response")
     
-    echo "CNI_COMMAND: $CNI_COMMAND" | adddate >> $log 
-    echo "Adding IP for Pod CIDR $podcidr" | adddate >> $log 
-    echo "GatewayIP $podcidr_gw" | adddate >> $log 
-    echo "IP Mask $subnet_mask_size" | adddate >> $log 
-    echo "CNI_IFNAME: $CNI_IFNAME" | adddate >> $log 
-    echo "CNI_NETNS: $CNI_NETNS" | adddate >> $log 
-    echo "CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> $log  
-    echo "IPAM pod_ip: $pod_ip" | adddate >> $log
-    echo "IPAM bridge_ip: $bridge_ip" | adddate >> $log
-	 
+    logger "CNI_COMMAND: $CNI_COMMAND"
+    logger "Adding IP for Pod CIDR $podcidr"  
+    logger "GatewayIP $podcidr_gw" 
+    logger "IP Mask $subnet_mask_size" 
+    logger "CNI_IFNAME: $CNI_IFNAME" 
+    logger "CNI_NETNS: $CNI_NETNS"  
+    logger "CNI_CONTAINERID: $CNI_CONTAINERID" 
+    logger "IPAM pod_ip: $ipam_pod_ip" 
+    logger "IPAM bridge_ip: $ipam_bridge_ip" 
+    logger "IPAM code: $ipam_code" 
+    logger "IPAM msg: $ipam_msg" 
+    
     # calculate $ip
-    if [ -f $ip_file ]; then
-        n=`cat $ip_file`
-    else
-        n=1
-        echo "IP number: $n" | adddate >> $log 
-    fi
-    n=$(($n+1))
-    ip=$(echo $podcidr | sed "s:0/24:$n:g")
-    echo $n > $ip_file
-    echo "IP $ip, number: $n" | adddate >> $log 
+    #if [ -f $ip_file ]; then
+    #    n=`cat $ip_file`
+    #else
+    #    n=1
+    #    echo "IP number: $n" | adddate >> $log 
+    #fi
+    #n=$(($n+1))
+    #ip=$(echo $podcidr | sed "s:0/24:$n:g")
+    #echo $n > $ip_file
+    #echo "IP $ip, number: $n" | adddate >> $log 
 
     rand=$(tr -dc 'A-F0-9' < /dev/urandom | head -c4)
     host_if_name="veth$rand"
@@ -121,34 +124,34 @@ ADD)
     ip link set $CNI_IFNAME netns $CNI_CONTAINERID
 
     ip netns exec $CNI_CONTAINERID ip link set $CNI_IFNAME up
-    ip netns exec $CNI_CONTAINERID ip addr add $pod_ip/24 dev $CNI_IFNAME
-    ip netns exec $CNI_CONTAINERID ip route add default via $podcidr_gw
+    ip netns exec $CNI_CONTAINERID ip addr add $ipam_pod_ip/24 dev $CNI_IFNAME
+    ip netns exec $CNI_CONTAINERID ip route add default via $ipam_bridge_ip
 
 
     mac=$(ip netns exec $CNI_CONTAINERID ip link show eth0 | awk '/ether/ {print $2}')
-    address="${pod_ip}/24"
+    address="${ipam_pod_ip}/24"
     output_template='
-{
-  "cniVersion": "0.3.1",
-  "interfaces": [                                            
-      {
-          "name": "%s",
-          "mac": "%s",                            
-          "sandbox": "%s" 
-      }
-  ],
-  "ips": [
-      {
-          "version": "4",
-          "address": "%s",
-          "gateway": "%s",          
-          "interface": 0 
-      }
-  ]
-}' 
+	{
+	  "cniVersion": "0.3.1",
+	  "interfaces": [                                            
+	      {
+	          "name": "%s",
+	          "mac": "%s",                            
+	          "sandbox": "%s" 
+	      }
+	  ],
+	  "ips": [
+	      {
+	          "version": "4",
+	          "address": "%s",
+	          "gateway": "%s",          
+	          "interface": 0 
+	      }
+	  ]
+	}' 
     
     output=$(printf "${output_template}" $CNI_IFNAME $mac $CNI_NETNS $address $podcidr_gw)
-    echo $output >> $log
+    logger $output
     echo "$output"
 	
     #exit 0	    
@@ -156,7 +159,7 @@ ADD)
 
 # Deleting network from pod 
 DEL)
-    echo "rm -rf /var/run/netns/$CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> $log
+    logger "rm -rf /var/run/netns/$CNI_CONTAINERID: $CNI_CONTAINERID" 
 
     rm -rf /var/run/netns/$CNI_CONTAINERID
     
@@ -175,7 +178,7 @@ echo '{
 
 *)
 
-  echo "Unknown CNI_COMMAND: $CNI_COMMAND" | adddate >> $log
+  logger "Unknown CNI_COMMAND: $CNI_COMMAND" 
   exit 1
 ;;
 
