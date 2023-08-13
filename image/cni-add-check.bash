@@ -8,7 +8,8 @@ rand=$(tr -dc 'A-F0-9' < /dev/urandom | head -c4)
 host_if_name="veth$rand"
 rand=$(tr -dc '0-9' < /dev/urandom | head -c4)
 host_ns_name="$rand"
-cat /etc/cni/net.d/10-k8s-cni-bash-plugin.conf | DEBUG=1 CNI_COMMAND=ADD CNI_CONTAINERID=example CNI_NETNS=/dev/null CNI_IFNAME=host_if_name CNI_PATH=/opt/cni/bin /opt/cni/bin/k8s-cni-bash-plugin
+container_id="example$rand"
+cat /etc/cni/net.d/10-k8s-cni-bash-plugin.conf | DEBUG=1 CNI_COMMAND=ADD CNI_CONTAINERID=$container_id CNI_NETNS=/dev/null CNI_IFNAME=$host_if_name CNI_PATH=/opt/cni/bin /opt/cni/bin/k8s-cni-bash-plugin
 
 tail /var/log/cni.log
 
