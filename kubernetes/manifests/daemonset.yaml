@@ -30,22 +30,22 @@ spec:
         imagePullPolicy: Always
         command: ["/cni/start.sh"]
         env:
-        - name: PODNETWORK  # IP of APP pods
+        - name: CNI_PODNETWORK  # IP of APP pods
           value: "10.240.0.0/16"
-        - name: NODEMASK  # CIDR mask for single node 10.240.0.0/24, 10.240.1.0/24, 10.240.2.0/24, ...
+        - name: CNI_NODEMASK  # CIDR mask for single node 10.240.0.0/24, 10.240.1.0/24, 10.240.2.0/24, ...
           value: "24" 
-        - name: LOGFILE
+        - name: CNI_LOGFILE
           value: /var/log/cni.log
-        - name: HOSTNAME
+        - name: CNI_HOSTNAME
           valueFrom:
             fieldRef:
               apiVersion: v1
               fieldPath: spec.nodeName
-        - name: PODNAMESPACE
+        - name: CNI_PODNAMESPACE
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace   
-        - name: PODIP
+        - name: CNI_PODIP
           valueFrom:
             fieldRef:
               fieldPath: status.podIP
@@ -69,22 +69,22 @@ spec:
         command: ["/bin/sh", "-c"]
         args: ["sleep 365d"]
         env:
-        - name: PODNETWORK  # IP of APP pods
+        - name: CNI_PODNETWORK  # IP of APP pods
           value: "10.240.0.0/16"
-        - name: NODEMASK  # CIDR mask for single node 10.240.0.0/24, 10.240.1.0/24, 10.240.2.0/24, ...
+        - name: CNI_NODEMASK  # CIDR mask for single node 10.240.0.0/24, 10.240.1.0/24, 10.240.2.0/24, ...
           value: "24" 
-        - name: LOGFILE
+        - name: CNI_LOGFILE
           value: /var/log/cni.log
-        - name: HOSTNAME
+        - name: CNI_HOSTNAME
           valueFrom:
             fieldRef:
               apiVersion: v1
               fieldPath: spec.nodeName
-        - name: PODNAMESPACE
+        - name: CNI_PODNAMESPACE
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        - name: PODIP
+        - name: CNI_PODIP
           valueFrom:
             fieldRef:
               fieldPath: status.podIP
