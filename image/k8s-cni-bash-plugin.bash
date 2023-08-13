@@ -46,6 +46,12 @@ allocate_ip(){
 	done
 }
 
+# Create an iptables rule only if it doesn't yet exist
+ensure() {
+  eval "$(sed 's/-A/-C/' <<<"$@")" &>/dev/null || eval "$@"
+}
+
+
 #exec 3>&1 # make stdout available as fd 3 for the result
 log=/var/log/cni.log #$CNI_LOGFILE # TODO , should be based on env 
 cniconf=`cat /dev/stdin`
@@ -89,7 +95,7 @@ ADD)
     #   ],
     #   "dns": {}
     # }
-    logger "CNI_COMMAND : $CNI_COMMAND begin"
+    logger "CNI_COMMAND : $CNI_COMMAND start"
     ipam_response=$(/opt/cni/bin/host-local <<<"$ipam_netconf")
     logger "ipam_response: $ipam_response"
     # Extract IP addresses for Pod and gateway (bridge) from IPAM response
@@ -121,17 +127,13 @@ ADD)
         logger "Not needed to configure bridge : $bridge_interface"
       fi	
     
-      # Create an iptables rule only if it doesn't yet exist
-      ensure() {
-        eval "$(sed 's/-A/-C/' <<<"$@")" &>/dev/null || eval "$@"
-      }
 
       # Allow forwarding of packets in default network namespace to/from Pods
       ensure iptables -A FORWARD -s "$podcidr" -j ACCEPT
       ensure iptables -A FORWARD -d "$podcidr" -j ACCEPT
 
       # Set up NAT for traffic leaving the cluster (replace Pod IP with node IP)
-      iptables -t nat -N MY_CNI_MASQUERADE &>/dev/null
+      ensure iptables -t nat -N MY_CNI_MASQUERADE &>/dev/null
       ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$podcidr" -j RETURN
       ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$host_network" -j RETURN
       ensure iptables -t nat -A MY_CNI_MASQUERADE -j MASQUERADE
@@ -218,6 +220,7 @@ ADD)
    # Create response by adding 'interfaces' field to response of IPAM plugin 
     response=$(jq ". += {interfaces:[{name:\"$CNI_IFNAME\",sandbox:\"$CNI_NETNS\"}]} | .ips[0] += {interface:0}" <<<"$ipam_response")
     log "Ipam response:\n$response"
+    logger "CNI_COMMAND : $CNI_COMMAND end"
     echo "$response" >&3
     #output=$(printf "${output_template}" $CNI_IFNAME $mac $CNI_NETNS $address $podcidr_gw)
     #logger $output
@@ -227,28 +230,34 @@ ADD)
 
 # Deleting network from pod 
 DEL)
+    logger "CNI_COMMAND : $CNI_COMMAND start"
     logger "ipam_netconf: $ipam_netconf"
     /opt/cni/bin/host-local <<<"$ipam_netconf"
     
     logger "rm -rf /var/run/netns/$CNI_CONTAINERID: $CNI_CONTAINERID" 
     rm -rf /var/run/netns/$CNI_CONTAINERID
+    logger "CNI_COMMAND : $CNI_COMMAND end"
     
 ;;
 
 CHECK)
-
+logger "CNI_COMMAND : $CNI_COMMAND start"
+logger "CNI_COMMAND : $CNI_COMMAND end"
 ;;
 
 VERSION)
+logger "CNI_COMMAND : $CNI_COMMAND start"
 echo '{
   "cniVersion": "0.3.1", 
   "supportedVersions": [ "0.3.0", "0.3.1", "0.4.0" ] 
 }'
+logger "CNI_COMMAND : $CNI_COMMAND end"
 ;;
 
 *)
-
+  logger "CNI_COMMAND : $CNI_COMMAND start"
   logger "Unknown CNI_COMMAND: $CNI_COMMAND" 
+  logger "CNI_COMMAND : $CNI_COMMAND end"
   exit 1
 ;;
 
