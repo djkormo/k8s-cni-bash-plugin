@@ -135,12 +135,11 @@ spec:
         hostPath:
           path: /tmp/k8s-cni-bash-plugin
           type: DirectoryOrCreate
-      volumes:
+          
       - name: cni-config
         configMap:
           name: k8s-cni-bash-plugin-configmap           
 
-          
       terminationGracePeriodSeconds: 30
       priorityClassName: system-node-critical
 
