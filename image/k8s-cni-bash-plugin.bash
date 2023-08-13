@@ -13,9 +13,10 @@ ip_file=/tmp/last_allocated_ip
 
 # Direct file descriptors 1 and 2 to log file, and file descriptor 3 to stdout
 exec 3>&1
-exec &>>/var/log/cni.log
+exec &>>${CNI_LOGFILE}
 
 # Write line to log file (file descriptor 1 is redirected to log file)
+
 logger() {
   echo -e "$(date): $*"
 }
@@ -49,23 +50,24 @@ allocate_ip(){
 IP_STORE=/tmp/reserved_ips # all reserved ips will be stored there
 
 #exec 3>&1 # make stdout available as fd 3 for the result
-log=/var/log/cni.log  #$LOGFILE # TODO , should be based on env 
+log=$CNI_LOGFILE #$CNI_LOGFILE # TODO , should be based on env 
 cniconf=`cat /dev/stdin`
 
 echo "CNI_CONFIG: $cniconf" | adddate >> $log
 echo "PATH: ${PATH}" | adddate >> $log
+echo "CNI_LOGFILE: ${CNI_LOGFILE}" | adddate >> $log
 
 #set -u
 #set -e
 
 echo >> $log
-echo "CNI_COMMAND: $CNI_COMMAND" | adddate >> $log
-echo "CNI_IFNAME: $CNI_IFNAME" | adddate >> $log
-echo "CNI_NETNS: $CNI_NETNS" | adddate >> $log
-echo "CNI_CONTAINERID: $CNI_CONTAINERID" | adddate >> $log
-echo "CNI_ARGS: $CNI_ARGS" | adddate >> $log
-echo "CNI_PATH: $CNI_PATH" | adddate >> $log
-echo "IP temp file: $ip_file" | adddate >> $log
+logger "CNI_COMMAND: $CNI_COMMAND" 
+logger "CNI_IFNAME: $CNI_IFNAME" 
+logger "CNI_NETNS: $CNI_NETNS" 
+logger "CNI_CONTAINERID: $CNI_CONTAINERID" 
+logger "CNI_ARGS: $CNI_ARGS" 
+logger "CNI_PATH: $CNI_PATH" 
+logger "IP temp file: $ip_file"
 
 logger "CNI_COMMAND=$CNI_COMMAND, CNI_CONTAINERID=$CNI_CONTAINERID, CNI_NETNS=$CNI_NETNS, CNI_IFNAME=$CNI_IFNAME, CNI_PATH=$CNI_PATH\n$netconf"
 
@@ -79,9 +81,9 @@ ADD)
     
     # Prepare NetConf for host-local IPAM plugin (add 'ipam' field)
     ipam_netconf=$(jq ". += {ipam:{subnet:\"$podcidr\"}}" <<<"$cniconf")
-
+    logger "ipam_netconf: $ipam_netconf"
     ipam_response=$(/opt/cni/bin/host-local <<<"$ipam_netconf")
-
+    logger "ipam_response: $ipam_response"
     # Extract IP addresses for Pod and gateway (bridge) from IPAM response
     pod_ip=$(jq -r '.ips[0].address' <<<"$ipam_response")
     bridge_ip=$(jq -r '.ips[0].gateway' <<<"$ipam_response")
