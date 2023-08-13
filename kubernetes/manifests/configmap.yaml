@@ -5,7 +5,6 @@ metadata:
   namespace: kube-system
 data:
   10-k8s-cni-bashplugin.conf: |
-  
      {
       "cniVersion": "0.3.1",
       "name": "k8s-cni-bash-plugin",
