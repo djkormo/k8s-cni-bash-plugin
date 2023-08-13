@@ -74,6 +74,7 @@ case $CNI_COMMAND in
 # Adding network to pod 
 
 ADD)
+    host_network=$(echo $cniconf | jq -r ".network")
     podcidr=$(echo $cniconf | jq -r ".podcidr")
     podcidr_gw=$(echo $podcidr | sed "s:0/24:1:g")
     subnet_mask_size=$(echo $podcidr | awk -F  "/" '{print $2}')
@@ -88,6 +89,46 @@ ADD)
     ipam_bridge_ip=$(jq -r '.ips[0].gateway' <<<"$ipam_response")
     ipam_code=$(jq -r '.code' <<<"$ipam_response")
     ipam_msg=$(jq -r '.msg' <<<"$ipam_response")
+
+
+ # The lock provides mutual exclusivity (at most one process in the critical
+    # section) and synchronisation (no process reaches the Pod-specific setup
+    # before the one-time setup has been fully completed at least once).
+    {
+      # Acquire lock, or wait if it is already taken
+      flock 100
+
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+      # Begin of critical section
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+      # Create bridge only if it doesn't yet exist
+      if ! ip link show cni0 &>/dev/null; then
+        ip link add cni0 type bridge
+        ip address add "$ipam_bridge_ip/24" dev cni0
+        ip link set cni0 up
+      fi
+    
+      # Create an iptables rule only if it doesn't yet exist
+      ensure() {
+        eval "$(sed 's/-A/-C/' <<<"$@")" &>/dev/null || eval "$@"
+      }
+
+      # Allow forwarding of packets in default network namespace to/from Pods
+      ensure iptables -A FORWARD -s "$podcidr" -j ACCEPT
+      ensure iptables -A FORWARD -d "$podcidr" -j ACCEPT
+
+      # Set up NAT for traffic leaving the cluster (replace Pod IP with node IP)
+      iptables -t nat -N MY_CNI_MASQUERADE &>/dev/null
+      ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$podcidr" -j RETURN
+      ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$host_network" -j RETURN
+      ensure iptables -t nat -A MY_CNI_MASQUERADE -j MASQUERADE
+      ensure iptables -t nat -A POSTROUTING -s "$podcidr" -j MY_CNI_MASQUERADE
+
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+      # End of critical section
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+    } 100>/tmp/k8s-cni-bash-plugin.lock
     
     logger "CNI_COMMAND: $CNI_COMMAND"
     logger "Adding IP for Pod CIDR $podcidr"  
@@ -159,6 +200,7 @@ ADD)
 
 # Deleting network from pod 
 DEL)
+    /opt/cni/bin/host-local <<<"$ipam_netconf"
     logger "rm -rf /var/run/netns/$CNI_CONTAINERID: $CNI_CONTAINERID" 
 
     rm -rf /var/run/netns/$CNI_CONTAINERID
