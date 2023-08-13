@@ -54,8 +54,8 @@ logger "CNI_CONFIG: $cniconf"
 logger "PATH: ${PATH}"
 logger "CNI_LOGFILE: ${CNI_LOGFILE}"
 
-set -u
-set -e
+#set -u
+#set -e
 set -x
 
 # Read cni configuration file
