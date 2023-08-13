@@ -77,7 +77,6 @@ ipam_netconf=$(jq ". += {ipam:{subnet:\"$podcidr\", gateway:\"$podcidr_gw\"}}" <
 #logger "ipam_netconf: $ipam_netconf"
 logger "CNI_COMMAND=$CNI_COMMAND, CNI_CONTAINERID=$CNI_CONTAINERID, CNI_NETNS=$CNI_NETNS, CNI_IFNAME=$CNI_IFNAME, CNI_ARGS=$CNI_ARGS, CNI_PATH=$CNI_PATH\n$cniconf\n$ipam_netconf"
 
-
 case $CNI_COMMAND in
 # Adding network to pod 
 
@@ -129,15 +128,15 @@ ADD)
     
 
       # Allow forwarding of packets in default network namespace to/from Pods
-      #ensure iptables -A FORWARD -s "$podcidr" -j ACCEPT
-      #ensure iptables -A FORWARD -d "$podcidr" -j ACCEPT
+      ensure iptables -A FORWARD -s "$podcidr" -j ACCEPT
+      ensure iptables -A FORWARD -d "$podcidr" -j ACCEPT
 
       # Set up NAT for traffic leaving the cluster (replace Pod IP with node IP)
-      #ensure iptables -t nat -N MY_CNI_MASQUERADE &>/dev/null
-      #ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$podcidr" -j RETURN
-      #ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$host_network" -j RETURN
-      #ensure iptables -t nat -A MY_CNI_MASQUERADE -j MASQUERADE
-      #ensure iptables -t nat -A POSTROUTING -s "$podcidr" -j MY_CNI_MASQUERADE
+      ensure iptables -t nat -N MY_CNI_MASQUERADE &>/dev/null
+      ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$podcidr" -j RETURN
+      ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$host_network" -j RETURN
+      ensure iptables -t nat -A MY_CNI_MASQUERADE -j MASQUERADE
+      ensure iptables -t nat -A POSTROUTING -s "$podcidr" -j MY_CNI_MASQUERADE
 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
       # End of critical section
