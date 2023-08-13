@@ -200,9 +200,10 @@ ADD)
 
 # Deleting network from pod 
 DEL)
+    logger "ipam_netconf: $ipam_netconf"
     /opt/cni/bin/host-local <<<"$ipam_netconf"
+    
     logger "rm -rf /var/run/netns/$CNI_CONTAINERID: $CNI_CONTAINERID" 
-
     rm -rf /var/run/netns/$CNI_CONTAINERID
     
 ;;
