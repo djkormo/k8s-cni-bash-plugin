@@ -10,7 +10,8 @@ COPY 10-k8s-cni-bash-plugin.conf 10-k8s-cni-bash-plugin.conf
 COPY k8s-cni-bash-plugin.bash k8s-cni-bash-plugin.bash
 COPY start.sh start.sh
 COPY stop.sh stop.sh
-COPY check-cni.bash check-cni.bash
+COPY cni-add-check.bash cni-add-check.bash 
+COPY cni-del-check.bash cni-del-check.bash 
 COPY k8s-cni-bash-plugin.env k8s-cni-bash-plugin.env 
 #COPY export $(cat .env)
 RUN chmod +x /cni/*.bash
