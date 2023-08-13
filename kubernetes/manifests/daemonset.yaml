@@ -115,11 +115,16 @@ spec:
           mountPath: /etc/cni/net.d
         - name: cni-tmp
           mountPath: /tmp
+        - name: cni-ipam
+          mountPath: /var/lib/cni/k8s-cni-bash-plugin
           
       volumes:
       - name: varlog
         hostPath:
           path: /var/log
+      - name: cni-ipam
+        hostPath:
+          path: /var/lib/cni/networks/k8s-cni-bash-plugin
       - name: cni-bin
         hostPath:
           path: /opt/cni/bin
