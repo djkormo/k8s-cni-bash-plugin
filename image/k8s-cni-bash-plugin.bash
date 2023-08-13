@@ -89,7 +89,7 @@ ADD)
     #   ],
     #   "dns": {}
     # }
-
+    logger "CNI_COMMAND : $CNI_COMMAND begin"
     ipam_response=$(/opt/cni/bin/host-local <<<"$ipam_netconf")
     logger "ipam_response: $ipam_response"
     # Extract IP addresses for Pod and gateway (bridge) from IPAM response
@@ -103,7 +103,7 @@ ADD)
  # The lock provides mutual exclusivity (at most one process in the critical
     # section) and synchronisation (no process reaches the Pod-specific setup
     # before the one-time setup has been fully completed at least once).
-    {
+    #{
       # Acquire lock, or wait if it is already taken
       #flock 100
 
@@ -140,13 +140,14 @@ ADD)
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
       # End of critical section
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-    }  # 100>/tmp/k8s-cni-bash-plugin.lock
+    #}  # 100>/tmp/k8s-cni-bash-plugin.lock
 
     #--------------------------------------------------------------------------#
     # Display all input paramneters
     #--------------------------------------------------------------------------#
-    logger "CNI_COMMAND: $CNI_COMMAND"
-    logger "Adding IP for Pod CIDR $podcidr"  
+    logger "CNI_COMMAND: $CNI_COMMAND configuration"
+    logger "CNI_COMMAND:  $CNI_COMMAND"
+    logger "Adding IP for Pod CIDR: $podcidr"  
     logger "GatewayIP $podcidr_gw" 
     logger "IP Mask $subnet_mask_size" 
     logger "CNI_IFNAME: $CNI_IFNAME" 
