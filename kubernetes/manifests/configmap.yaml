@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: k8s-cni-bash-plugin
+  name: k8s-cni-bash-plugin-configmap
   namespace: kube-system
 data:
   10-k8s-cni-bashplugin.conf: |
