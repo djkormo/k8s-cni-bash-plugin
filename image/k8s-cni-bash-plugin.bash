@@ -68,20 +68,24 @@ logger "CNI_ARGS: $CNI_ARGS"
 logger "CNI_PATH: $CNI_PATH" 
 logger "IP temp file: $ip_file"
 
-logger "CNI_COMMAND=$CNI_COMMAND, CNI_CONTAINERID=$CNI_CONTAINERID, CNI_NETNS=$CNI_NETNS, CNI_IFNAME=$CNI_IFNAME, CNI_PATH=$CNI_PATH\n$netconf"
+# Read cni configuration file
+host_network=$(echo $cniconf | jq -r ".network")
+podcidr=$(echo $cniconf | jq -r ".podcidr")
+podcidr_gw=$(echo $podcidr | sed "s:0/24:1:g")
+subnet_mask_size=$(echo $podcidr | awk -F  "/" '{print $2}')
+
+# Prepare NetConf for host-local IPAM plugin (add 'ipam' field)
+ipam_netconf=$(jq ". += {ipam:{subnet:\"$podcidr\", gateway:\"$podcidr_gw\"}}" <<<"$cniconf")
+logger "ipam_netconf: $ipam_netconf"
+
+logger "CNI_COMMAND=$CNI_COMMAND, CNI_CONTAINERID=$CNI_CONTAINERID, CNI_NETNS=$CNI_NETNS, CNI_IFNAME=$CNI_IFNAME, CNI_PATH=$CNI_PATH\n$cniconf"
+
 
 case $CNI_COMMAND in
 # Adding network to pod 
 
 ADD)
-    host_network=$(echo $cniconf | jq -r ".network")
-    podcidr=$(echo $cniconf | jq -r ".podcidr")
-    podcidr_gw=$(echo $podcidr | sed "s:0/24:1:g")
-    subnet_mask_size=$(echo $podcidr | awk -F  "/" '{print $2}')
-    
-    # Prepare NetConf for host-local IPAM plugin (add 'ipam' field)
-    ipam_netconf=$(jq ". += {ipam:{subnet:\"$podcidr\", gateway:\"$podcidr_gw\"}}" <<<"$cniconf")
-    logger "ipam_netconf: $ipam_netconf"
+
     ipam_response=$(/opt/cni/bin/host-local <<<"$ipam_netconf")
     logger "ipam_response: $ipam_response"
     # Extract IP addresses for Pod and gateway (bridge) from IPAM response
