@@ -52,7 +52,7 @@ spec:
                   
         securityContext:
           privileged: true
-        capabilities:
+          capabilities:
             drop:
             - all
             add: ["NET_ADMIN"]
