@@ -173,11 +173,13 @@ ADD)
     ln -sf "$CNI_NETNS" /var/run/netns/"$CNI_CONTAINERID"
 
     # Create veth pair in Pod network namespace
+    logger "Create veth pair in Pod network namespace: ip netns exec $CNI_CONTAINERID ip link add "$CNI_IFNAME" type veth peer name $host_ifname"
     rand=$(tr -dc 'A-F0-9' < /dev/urandom | head -c4)
-    host_if_name=veth$rand
-    logger "Create veth pair in Pod network namespace: ip netns exec "$CNI_CONTAINERID" ip link add "$CNI_IFNAME" type veth peer name $host_ifname"
-    ip netns exec "$CNI_CONTAINERID" ip link add "$CNI_IFNAME" type veth peer name $host_ifname
-
+    host_ifname=veth$rand
+    host_ifname=veth$RANDOM
+    ip netns exec "$CNI_CONTAINERID" ip link add "$CNI_IFNAME" type veth peer name "$host_ifname"
+    
+    
     # Move host-end of veth pair to default network namespace and connect to bridge
     logger "Move host-end of veth pair to default network namespace and connect to bridge $bridge_interface to: $CNI_CONTAINERID"
     ip netns exec "$CNI_CONTAINERID" ip link set $host_ifname netns 1
