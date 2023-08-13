@@ -175,21 +175,22 @@ ADD)
     # Create veth pair in Pod network namespace
     rand=$(tr -dc 'A-F0-9' < /dev/urandom | head -c4)
     host_if_name="veth$rand"
-    ip netns exec "$CNI_CONTAINERID" ip link add "$CNI_IFNAME" type veth peer name "$host_ifname"
+    logger "Create veth pair in Pod network namespace: ip netns exec "$CNI_CONTAINERID" ip link add "$CNI_IFNAME" type veth peer name $host_ifname"
+    ip netns exec "$CNI_CONTAINERID" ip link add "$CNI_IFNAME" type veth peer name $host_ifname
 
     # Move host-end of veth pair to default network namespace and connect to bridge
     logger "Move host-end of veth pair to default network namespace and connect to bridge $bridge_interface to: $CNI_CONTAINERID"
-    ip netns exec "$CNI_CONTAINERID" ip link set "$host_ifname" netns 1
-    ip link set "$host_ifname" master $bridge_interface up
+    ip netns exec "$CNI_CONTAINERID" ip link set $host_ifname netns 1
+    ip link set $host_ifname master $bridge_interface up
 	
     # Assign IP address selected by IPAM plugin to Pod-end of veth pair
     logger "Assign IP $ipam_pod_ip address selected by IPAM plugin to Pod-end of veth pair to: $CNI_CONTAINERID"
-    ip netns exec "$CNI_CONTAINERID" ip address add "$ipam_pod_ip" dev "$CNI_IFNAME"
+    ip netns exec "$CNI_CONTAINERID" ip address add $ipam_pod_ip dev "$CNI_IFNAME"
     ip netns exec "$CNI_CONTAINERID" ip link set "$CNI_IFNAME" up
     
     # Create default route to bridge in Pod network namespace
     logger "Create default route to bridge in Pod with IP $ipam_bridge_ip network namespace: $CNI_CONTAINERID"
-    ip netns exec "$CNI_CONTAINERID" ip route add default via "$ipam_bridge_ip" dev "$CNI_IFNAME"
+    ip netns exec "$CNI_CONTAINERID" ip route add default via $ipam_bridge_ip dev $CNI_IFNAME
 
     mac=$(ip netns exec $CNI_CONTAINERID ip link show eth0 | awk '/ether/ {print $2}')
     address="${ipam_pod_ip}/24"
