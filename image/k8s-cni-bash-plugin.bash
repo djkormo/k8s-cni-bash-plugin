@@ -61,6 +61,7 @@ logger "CNI_LOGFILE: ${CNI_LOGFILE}"
 
 # Read cni configuration file
 host_network=$(echo $cniconf | jq -r ".network")
+bridge_interface=$(echo $cniconf | jq -r ".bridge")
 podcidr=$(echo $cniconf | jq -r ".podcidr")
 podcidr_gw=$(echo $podcidr | sed "s:0/24:1:g")
 subnet_mask_size=$(echo $podcidr | awk -F  "/" '{print $2}')
@@ -111,12 +112,15 @@ ADD)
       # Begin of critical section
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-      # Create bridge only if it doesn't yet exist
-      if ! ip link show cni0 &>/dev/null; then
-        ip link add cni0 type bridge
-        ip address add "$ipam_bridge_ip/24" dev cni0
-        ip link set cni0 up
-      fi
+      # Create bridge only if it doesn't yet exist (default cni0)
+      if ! ip link show $bridge_interface &>/dev/null; then
+        ip link add $bridge_interface type bridge
+        ip address add "$ipam_bridge_ip/24" dev $bridge_interface
+        ip link set $bridge_interface up
+      
+      else
+        logger "Not needed to configure bridge : $bridge_interface"
+      fi	
     
       # Create an iptables rule only if it doesn't yet exist
       ensure() {
@@ -151,19 +155,19 @@ ADD)
     logger "IPAM code: $ipam_code" 
     logger "IPAM msg: $ipam_msg" 
     
-
+    # randomize interface suffix
     rand=$(tr -dc 'A-F0-9' < /dev/urandom | head -c4)
     host_if_name="veth$rand"
     ip link add $CNI_IFNAME type veth peer name $host_if_name  --ignore-errors
     ip link set $host_ifname up  --ignore-errors
 
     mkdir -p /var/run/netns/
-    ip link set $host_ifname master cni0
+    ip link set $host_ifname master $bridge_interface
     ln -sfT $CNI_NETNS /var/run/netns/$CNI_CONTAINERID
     ip link set $CNI_IFNAME netns $CNI_CONTAINERID
 
     ip netns exec $CNI_CONTAINERID ip link set $CNI_IFNAME up
-    ip netns exec $CNI_CONTAINERID ip addr add $ipam_pod_ip/24 dev $CNI_IFNAME
+    ip netns exec $CNI_CONTAINERID ip addr add $ipam_pod_ip/$subnet_mask_size dev $CNI_IFNAME
     ip netns exec $CNI_CONTAINERID ip route add default via $ipam_bridge_ip
 
 
@@ -191,13 +195,12 @@ ADD)
 
    # Create response by adding 'interfaces' field to response of IPAM plugin 
     response=$(jq ". += {interfaces:[{name:\"$CNI_IFNAME\",sandbox:\"$CNI_NETNS\"}]} | .ips[0] += {interface:0}" <<<"$ipam_response")
-    log "Response:\n$response"
+    log "Ipam response:\n$response"
     echo "$response" >&3
     #output=$(printf "${output_template}" $CNI_IFNAME $mac $CNI_NETNS $address $podcidr_gw)
     #logger $output
     #echo "$output"
-	
-    #exit 0	    
+	    
 ;;
 
 # Deleting network from pod 
