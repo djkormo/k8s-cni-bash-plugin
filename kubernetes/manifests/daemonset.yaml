@@ -52,6 +52,10 @@ spec:
                   
         securityContext:
           privileged: true
+        capabilities:
+            drop:
+            - all
+            add: ["NET_ADMIN"]
               
         volumeMounts:
         - name: varlog
@@ -96,6 +100,10 @@ spec:
             memory: 200Mi
         securityContext:
           privileged: true
+          capabilities:
+            drop:
+            - all
+            add: ["NET_ADMIN"]
 
         lifecycle:
 
