@@ -116,7 +116,7 @@ spec:
         - name: cni-tmp
           mountPath: /tmp
         - name: cni-ipam
-          mountPath: /var/lib/cni/k8s-cni-bash-plugin
+          mountPath: /var/lib/cni/networks/k8s-cni-bash-plugin
           
       volumes:
       - name: varlog
