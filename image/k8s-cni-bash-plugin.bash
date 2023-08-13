@@ -157,17 +157,30 @@ ADD)
     # randomize interface suffix
     rand=$(tr -dc 'A-F0-9' < /dev/urandom | head -c4)
     host_if_name="veth$rand"
-    ip link add $CNI_IFNAME type veth peer name $host_if_name  --ignore-errors
-    ip link set $host_ifname up  --ignore-errors
+  #--------------------------------------------------------------------------#
+    # Do Pod-specific setup
+    #--------------------------------------------------------------------------#
 
+    # Create named link to Pod network namespace (for 'ip' command)
+    logger "linking CNI_NETNS to: $CNI_CONTAINERID"
     mkdir -p /var/run/netns/
-    ip link set $host_ifname master $bridge_interface
-    ln -sfT $CNI_NETNS /var/run/netns/$CNI_CONTAINERID
-    ip link set $CNI_IFNAME netns $CNI_CONTAINERID
+    ln -sf "$CNI_NETNS" /var/run/netns/"$CNI_CONTAINERID"
 
-    ip netns exec $CNI_CONTAINERID ip link set $CNI_IFNAME up
-    ip netns exec $CNI_CONTAINERID ip addr add $ipam_pod_ip/$subnet_mask_size dev $CNI_IFNAME
-    ip netns exec $CNI_CONTAINERID ip route add default via $ipam_bridge_ip
+    # Create veth pair in Pod network namespace
+    rand=$(tr -dc 'A-F0-9' < /dev/urandom | head -c4)
+    host_if_name="veth$rand"
+    ip netns exec "$CNI_CONTAINERID" ip link add "$CNI_IFNAME" type veth peer name "$host_ifname"
+
+    # Move host-end of veth pair to default network namespace and connect to bridge
+    ip netns exec "$CNI_CONTAINERID" ip link set "$host_ifname" netns 1
+    ip link set "$host_ifname" master $bridge_interface up
+
+    # Assign IP address selected by IPAM plugin to Pod-end of veth pair
+    ip netns exec "$CNI_CONTAINERID" ip address add "$ipam_pod_ip" dev "$CNI_IFNAME"
+    ip netns exec "$CNI_CONTAINERID" ip link set "$CNI_IFNAME" up
+    
+    # Create default route to bridge in Pod network namespace
+    ip netns exec "$CNI_CONTAINERID" ip route add default via "$ipam_bridge_ip" dev "$CNI_IFNAME"
 
 
     mac=$(ip netns exec $CNI_CONTAINERID ip link show eth0 | awk '/ether/ {print $2}')
@@ -191,7 +204,11 @@ ADD)
 	      }
 	  ]
 	}' 
-
+ 
+    #--------------------------------------------------------------------------#
+    # Return response
+    #--------------------------------------------------------------------------#
+    
    # Create response by adding 'interfaces' field to response of IPAM plugin 
     response=$(jq ". += {interfaces:[{name:\"$CNI_IFNAME\",sandbox:\"$CNI_NETNS\"}]} | .ips[0] += {interface:0}" <<<"$ipam_response")
     log "Ipam response:\n$response"
