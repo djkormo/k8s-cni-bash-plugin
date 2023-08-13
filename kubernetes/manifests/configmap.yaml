@@ -4,6 +4,16 @@ metadata:
   name: k8s-cni-bash-plugin-configmap
   namespace: kube-system
 data:
+  config_develop.json: |
+    {
+        "current_env" : "gcp-development-minikube",
+        "Directory_Type" : "folder",
+        "Input_Environment_Type" : "gcs",
+        "Input_Environment_Location" : "raw-data",
+        "Output_Environment_Type" : "bigquery",
+        "Output_Environment_Location" : "test_ds",
+        "report_location": "reports"
+    }
   10-k8s-cni-bashplugin.conf: |
      {
       "cniVersion": "0.3.1",
