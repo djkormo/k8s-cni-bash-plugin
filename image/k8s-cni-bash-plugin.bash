@@ -2,7 +2,6 @@
 
 if [[ ${DEBUG} -gt 0 ]]; then set -x; fi
 
-ip_file=/tmp/last_allocated_ip
 
 # based on
 
@@ -60,14 +59,6 @@ logger "CNI_LOGFILE: ${CNI_LOGFILE}"
 #set -u
 #set -e
 
-logger "CNI_COMMAND: $CNI_COMMAND" 
-logger "CNI_IFNAME: $CNI_IFNAME" 
-logger "CNI_NETNS: $CNI_NETNS" 
-logger "CNI_CONTAINERID: $CNI_CONTAINERID" 
-logger "CNI_ARGS: $CNI_ARGS" 
-logger "CNI_PATH: $CNI_PATH" 
-logger "IP temp file: $ip_file"
-
 # Read cni configuration file
 host_network=$(echo $cniconf | jq -r ".network")
 podcidr=$(echo $cniconf | jq -r ".podcidr")
@@ -76,9 +67,9 @@ subnet_mask_size=$(echo $podcidr | awk -F  "/" '{print $2}')
 
 # Prepare NetConf for host-local IPAM plugin (add 'ipam' field)
 ipam_netconf=$(jq ". += {ipam:{subnet:\"$podcidr\", gateway:\"$podcidr_gw\"}}" <<<"$cniconf")
-logger "ipam_netconf: $ipam_netconf"
 
-logger "CNI_COMMAND=$CNI_COMMAND, CNI_CONTAINERID=$CNI_CONTAINERID, CNI_NETNS=$CNI_NETNS, CNI_IFNAME=$CNI_IFNAME, CNI_PATH=$CNI_PATH\n$cniconf"
+logger "ipam_netconf: $ipam_netconf"
+logger "CNI_COMMAND=$CNI_COMMAND, CNI_CONTAINERID=$CNI_CONTAINERID, CNI_NETNS=$CNI_NETNS, CNI_IFNAME=$CNI_IFNAME, CNI_ARGS=$CNI_ARGS, CNI_PATH=$CNI_PATH\n$cniconf\n$ipam_netconf"
 
 
 case $CNI_COMMAND in
@@ -106,6 +97,7 @@ ADD)
     ipam_bridge_ip=$(jq -r '.ips[0].gateway' <<<"$ipam_response")
     ipam_code=$(jq -r '.code' <<<"$ipam_response")
     ipam_msg=$(jq -r '.msg' <<<"$ipam_response")
+    logger "ipam_code: $ipam_code, ipam_msg: $ipam_msg"
 
 
  # The lock provides mutual exclusivity (at most one process in the critical
