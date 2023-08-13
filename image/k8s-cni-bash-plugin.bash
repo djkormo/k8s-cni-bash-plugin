@@ -78,7 +78,7 @@ ADD)
     subnet_mask_size=$(echo $podcidr | awk -F  "/" '{print $2}')
     
     # Prepare NetConf for host-local IPAM plugin (add 'ipam' field)
-    ipam_netconf=$(jq ". += {ipam:{subnet:\"$pod_subnet\"}}" <<<"$cniconf")
+    ipam_netconf=$(jq ". += {ipam:{subnet:\"$podcidr\"}}" <<<"$cniconf")
 
     ipam_response=$(/opt/cni/bin/host-local <<<"$ipam_netconf")
 
