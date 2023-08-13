@@ -85,6 +85,19 @@ case $CNI_COMMAND in
 # Adding network to pod 
 
 ADD)
+# Invoke host-local IPAM plugin to allocate IP address for Pod 
+    # Example response:
+    # {
+    #   "cniVersion": "0.3.1",
+    #   "ips": [
+    #     {
+    #       "version": "4",
+    #       "address": "200.200.0.2/24",
+    #       "gateway": "200.200.0.1"
+    #     }
+    #   ],
+    #   "dns": {}
+    # }
 
     ipam_response=$(/opt/cni/bin/host-local <<<"$ipam_netconf")
     logger "ipam_response: $ipam_response"
@@ -146,17 +159,6 @@ ADD)
     logger "IPAM code: $ipam_code" 
     logger "IPAM msg: $ipam_msg" 
     
-    # calculate $ip
-    #if [ -f $ip_file ]; then
-    #    n=`cat $ip_file`
-    #else
-    #    n=1
-    #    echo "IP number: $n" | adddate >> $log 
-    #fi
-    #n=$(($n+1))
-    #ip=$(echo $podcidr | sed "s:0/24:$n:g")
-    #echo $n > $ip_file
-    #echo "IP $ip, number: $n" | adddate >> $log 
 
     rand=$(tr -dc 'A-F0-9' < /dev/urandom | head -c4)
     host_if_name="veth$rand"
@@ -194,10 +196,14 @@ ADD)
 	      }
 	  ]
 	}' 
-    
-    output=$(printf "${output_template}" $CNI_IFNAME $mac $CNI_NETNS $address $podcidr_gw)
-    logger $output
-    echo "$output"
+
+   # Create response by adding 'interfaces' field to response of IPAM plugin 
+    response=$(jq ". += {interfaces:[{name:\"$CNI_IFNAME\",sandbox:\"$CNI_NETNS\"}]} | .ips[0] += {interface:0}" <<<"$ipam_response")
+    log "Response:\n$response"
+    echo "$response" >&3
+    #output=$(printf "${output_template}" $CNI_IFNAME $mac $CNI_NETNS $address $podcidr_gw)
+    #logger $output
+    #echo "$output"
 	
     #exit 0	    
 ;;
