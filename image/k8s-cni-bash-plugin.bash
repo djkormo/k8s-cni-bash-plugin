@@ -105,7 +105,7 @@ ADD)
     # before the one-time setup has been fully completed at least once).
     {
       # Acquire lock, or wait if it is already taken
-      flock 100
+      #flock 100
 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
       # Begin of critical section
@@ -140,7 +140,7 @@ ADD)
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
       # End of critical section
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-    } 100>/tmp/k8s-cni-bash-plugin.lock
+    }  # 100>/tmp/k8s-cni-bash-plugin.lock
 
     #--------------------------------------------------------------------------#
     # Display all input paramneters
