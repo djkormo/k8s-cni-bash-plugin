@@ -129,15 +129,15 @@ ADD)
     
 
       # Allow forwarding of packets in default network namespace to/from Pods
-      ensure iptables -A FORWARD -s "$podcidr" -j ACCEPT
-      ensure iptables -A FORWARD -d "$podcidr" -j ACCEPT
+      #ensure iptables -A FORWARD -s "$podcidr" -j ACCEPT
+      #ensure iptables -A FORWARD -d "$podcidr" -j ACCEPT
 
       # Set up NAT for traffic leaving the cluster (replace Pod IP with node IP)
-      ensure iptables -t nat -N MY_CNI_MASQUERADE &>/dev/null
-      ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$podcidr" -j RETURN
-      ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$host_network" -j RETURN
-      ensure iptables -t nat -A MY_CNI_MASQUERADE -j MASQUERADE
-      ensure iptables -t nat -A POSTROUTING -s "$podcidr" -j MY_CNI_MASQUERADE
+      #ensure iptables -t nat -N MY_CNI_MASQUERADE &>/dev/null
+      #ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$podcidr" -j RETURN
+      #ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$host_network" -j RETURN
+      #ensure iptables -t nat -A MY_CNI_MASQUERADE -j MASQUERADE
+      #ensure iptables -t nat -A POSTROUTING -s "$podcidr" -j MY_CNI_MASQUERADE
 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
       # End of critical section
