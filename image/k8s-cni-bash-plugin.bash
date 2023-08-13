@@ -46,8 +46,6 @@ allocate_ip(){
 	done
 }
 
-IP_STORE=/tmp/reserved_ips # all reserved ips will be stored there
-
 #exec 3>&1 # make stdout available as fd 3 for the result
 log=/var/log/cni.log #$CNI_LOGFILE # TODO , should be based on env 
 cniconf=`cat /dev/stdin`
@@ -56,8 +54,9 @@ logger "CNI_CONFIG: $cniconf"
 logger "PATH: ${PATH}"
 logger "CNI_LOGFILE: ${CNI_LOGFILE}"
 
-#set -u
-#set -e
+set -u
+set -e
+set -x
 
 # Read cni configuration file
 host_network=$(echo $cniconf | jq -r ".network")
@@ -69,7 +68,7 @@ subnet_mask_size=$(echo $podcidr | awk -F  "/" '{print $2}')
 # Prepare NetConf for host-local IPAM plugin (add 'ipam' field)
 ipam_netconf=$(jq ". += {ipam:{subnet:\"$podcidr\", gateway:\"$podcidr_gw\"}}" <<<"$cniconf")
 
-logger "ipam_netconf: $ipam_netconf"
+#logger "ipam_netconf: $ipam_netconf"
 logger "CNI_COMMAND=$CNI_COMMAND, CNI_CONTAINERID=$CNI_CONTAINERID, CNI_NETNS=$CNI_NETNS, CNI_IFNAME=$CNI_IFNAME, CNI_ARGS=$CNI_ARGS, CNI_PATH=$CNI_PATH\n$cniconf\n$ipam_netconf"
 
 
