@@ -222,7 +222,7 @@ ADD)
     
    # Create response by adding 'interfaces' field to response of IPAM plugin 
     response=$(jq ". += {interfaces:[{name:\"$CNI_IFNAME\",sandbox:\"$CNI_NETNS\"}]} | .ips[0] += {interface:0}" <<<"$ipam_response")
-    log "Ipam response:\n$response"
+    logger "Ipam response:\n$response"
     logger "CNI_COMMAND : $CNI_COMMAND end"
     echo "$response" >&3
     #output=$(printf "${output_template}" $CNI_IFNAME $mac $CNI_NETNS $address $podcidr_gw)
