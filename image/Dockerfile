@@ -1,7 +1,8 @@
 FROM alpine:3.18.2
 LABEL maintainer="Krzysztof Pudlowski <djkormo@gmail.com>" version="0.0.1"
 
-RUN apk --no-cache add curl bash jq nmap iptables
+RUN apk --no-cache add curl bash jq nmap iptables util-linux
+
 RUN mkdir -p /cni
 WORKDIR /cni
 
