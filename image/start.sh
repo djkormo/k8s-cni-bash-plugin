@@ -3,7 +3,8 @@
 
 echo "Initialising CNI bash plugin"
 echo "PATH: ${PATH}"
-node_number=${CNI_HOSTNAME::-3}
+node_number=${CNI_HOSTNAME:(-3)}
+k8s-cni-bash-plugin-init
 echo "Node $CNI_HOSTNAME number: ${node_number}"
 
 
