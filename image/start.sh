@@ -4,9 +4,9 @@
 echo "Initialising CNI bash plugin"
 echo "PATH: ${PATH}"
 node_number=${CNI_HOSTNAME:(-3)}
-k8s-cni-bash-plugin-init
+#convert to int
+node_number=$(($node_number))
 echo "Node $CNI_HOSTNAME number: ${node_number}"
-
 
 echo "======== Configuration ========="
 cat /cni/10-k8s-cni-bash-plugin.conf
