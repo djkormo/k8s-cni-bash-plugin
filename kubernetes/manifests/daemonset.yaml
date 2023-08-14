@@ -67,8 +67,8 @@ spec:
         - name: cni-tmp
           mountPath: /tmp
         - name: cni-config
-          mountPath: /tmp/k8s-cni-bash-plugin/k8s-cni-bash-plugin.conf
-          subPath: k8s-cni-bash-plugin.conf
+          mountPath: /tmp/k8s-cni-bash-plugin/10-k8s-cni-bashplugin.conf
+          subPath: 10-k8s-cni-bashplugin.conf
 
       containers:
       - name: k8s-cni-bash-plugin
@@ -129,8 +129,8 @@ spec:
         - name: cni-ipam
           mountPath: /var/lib/cni/networks/k8s-cni-bash-plugin
         - name: cni-config
-          mountPath: /tmp/k8s-cni-bash-plugin/k8s-cni-bash-plugin.conf
-          subPath: k8s-cni-bash-plugin.conf
+          mountPath: /tmp/k8s-cni-bash-plugin/10-k8s-cni-bashplugin.conf
+          subPath: 10-k8s-cni-bashplugin.conf
           
       volumes:
       - name: varlog
