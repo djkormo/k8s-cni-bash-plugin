@@ -9,8 +9,8 @@ cat /cni/10-k8s-cni-bash-plugin.conf
 export $(cat k8s-cni-bash-plugin.env)
 printenv | grep CNI
 echo "======== Configuration ========="
-
-cp /cni/10-k8s-cni-bash-plugin.conf /etc/cni/net.d/10-k8s-cni-bash-plugin.conf
+# included via configmap
+cp /tmp/k8s-cni-bash-plugin/10-k8s-cni-bash-plugin.conf /etc/cni/net.d/10-k8s-cni-bash-plugin.conf
 
 echo "====== Installed cni plugings ==========="
 cp /cni/k8s-cni-bash-plugin.bash /opt/cni/bin/k8s-cni-bash-plugin
