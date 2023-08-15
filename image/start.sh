@@ -16,9 +16,9 @@ echo "======== Configuration ========="
 # included via configmap
 cp /tmp/k8s-cni-bash-plugin/10-k8s-cni-bash-plugin.conf /etc/cni/net.d/10-k8s-cni-bash-plugin.conf
 echo "======== conf template ========="
-cat /cni/10-k8s-cni-bash-plugin.conf
-sed -i "s/.x./.$node_number./" /etc/cni/net.d/10-k8s-cni-bash-plugin.conf
-echo "======== conf template ater changine node number ========="
+cat /etc/cni/net.d/10-k8s-cni-bash-plugin.conf
+sed -i "s/.node_number./.$node_number./" /etc/cni/net.d/10-k8s-cni-bash-plugin.conf
+echo "======== conf template ater changing node number ========="
 cat /etc/cni/net.d/10-k8s-cni-bash-plugin.conf
 echo "====== Installed cni plugings ==========="
 cp /cni/k8s-cni-bash-plugin.bash /opt/cni/bin/k8s-cni-bash-plugin
