@@ -2,7 +2,7 @@
 
 if [[ ${DEBUG} -gt 0 ]]; then set -x; fi
 
-
+my_cni_masquerade=MY_CNI_MASQUERADE
 # based on
 
 # https://github.com/s-matyukevich/bash-cni-plugin/blob/master/bash-cni
@@ -109,7 +109,7 @@ ADD)
         ip link set $bridge_interface up
       
       else
-        logger "Not needed to configure bridge : $bridge_interface"
+        logger "Not needed to configure bridge : $bridge_interface with IP $ipam_bridge_ip/24"
       fi	
     
       # Allow forwarding of packets in default network namespace to/from Pods
@@ -120,17 +120,21 @@ ADD)
       # Set up NAT for traffic leaving the cluster (replace Pod IP with node IP)
       logger "Set up NAT for traffic leaving the cluster (replace Pod IP with node IP): $pod_cidr -> $host_network"
       # TODO Not working YET
-      iptables -t nat -N MY_CNI_MASQUERADE &>/dev/null
       
-      logger "iptables -t nat -A MY_CNI_MASQUERADE -d $host_network -j RETURN"
-      ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$host_network" -j RETURN
+      logger "iptables -t nat -N $my_cni_masquerade &>/dev/null"
+      #iptables -t nat -N $my_cni_masquerade &>/dev/null
       
-      logger "iptables -t nat -A MY_CNI_MASQUERADE -d $pod_network -j RETURN"
-      ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$pod_network" -j RETURN
-      logger "iptables -t nat -A MY_CNI_MASQUERADE -j MASQUERADE"
-      ensure iptables -t nat -A MY_CNI_MASQUERADE -j MASQUERADE
-      logger "iptables -t nat -A POSTROUTING -s $pod_cidr -j MY_CNI_MASQUERADE"
-      ensure iptables -t nat -A POSTROUTING -s "$pod_cidr" -j MY_CNI_MASQUERADE
+      logger "iptables -t nat -A $my_cni_masquerade -d $host_network -j RETURN"
+      #ensure iptables -t nat -A $my_cni_masquerade -d "$host_network" -j RETURN
+      
+      logger "iptables -t nat -A $my_cni_masquerade -d $pod_network -j RETURN"
+      #ensure iptables -t nat -A $my_cni_masquerade -d "$pod_network" -j RETURN
+      
+      logger "iptables -t nat -A $my_cni_masquerade -j MASQUERADE"
+      #ensure iptables -t nat -A $my_cni_masquerade -j MASQUERADE
+      
+      logger "iptables -t nat -A POSTROUTING -s $pod_cidr -j $my_cni_masquerade"
+      #ensure iptables -t nat -A POSTROUTING -s "$pod_cidr" -j my_cni_masquerade
 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
       # End of critical section
