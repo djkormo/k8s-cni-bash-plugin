@@ -23,3 +23,16 @@ spec:
           ports:
             - name: http
               containerPort: 80
+---              
+kind: Service
+apiVersion: v1
+metadata:
+  name: chess-ai
+spec:
+  selector:
+    app: chess-ai
+    tier: backend
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: http
