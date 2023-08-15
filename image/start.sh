@@ -1,5 +1,6 @@
 #!/bin/sh
 
+set -o pipefail
 
 echo "Initialising CNI bash plugin"
 echo "PATH: ${PATH}"
@@ -28,6 +29,6 @@ echo "====== Installed cni plugings ==========="
 
 echo "========== Checking log file ${CNI_LOGFILE} =========="
 tail ${CNI_LOGFILE} -n 200
-#echo "========== Checking log file ${CNI_LOGFILE} =========="
+echo "========== Checking log file ${CNI_LOGFILE} =========="
 
 ip route | grep cni0
