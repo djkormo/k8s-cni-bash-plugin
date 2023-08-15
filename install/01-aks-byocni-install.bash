@@ -111,7 +111,7 @@ then
     NODE_SUBNET_ID=$(az network vnet subnet show --resource-group $AKS_RG --vnet-name "vnet_${AKS_NAME}" --name "nodesubnet" --query id -o tsv)
 
     # Get the virtual network subnet resource ID
-    POD_SUBNET_ID=$(az network vnet subnet show --resource-group $AKS_RG --vnet-name "vnet_${AKS_NAME}" --name "nodesubnet" --query id -o tsv)
+    POD_SUBNET_ID=$(az network vnet subnet show --resource-group $AKS_RG --vnet-name "vnet_${AKS_NAME}" --name "podsubnet" --query id -o tsv)
 
      echo "VNET_ID: $VNET_ID" 
      echo "NODE_SUBNET_ID: $NODE_SUBNET_ID" 
