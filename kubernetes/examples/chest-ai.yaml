@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chess-ai
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: chess-ai
+      tier: backend
+      track: stable
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: chess-ai
+        tier: backend
+        track: stable
+    spec:
+      containers:
+        - name: chess-ai
+          image: djkormo/chess-ai:latest
+          ports:
+            - name: http
+              containerPort: 80
