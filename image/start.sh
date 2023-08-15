@@ -7,8 +7,8 @@ echo "PATH: ${PATH}"
 node_number=${CNI_HOSTNAME:(-1)}
 echo "Node $CNI_HOSTNAME number: ${node_number}"
 #convert to int
-node_number=$(($node_number))
-echo "Node $CNI_HOSTNAME number: ${node_number}"
+#node_number=$(($node_number))
+#echo "Node $CNI_HOSTNAME number: ${node_number}"
 
 echo "======== Configuration ========="
 #export $(cat k8s-cni-bash-plugin.env)
@@ -28,7 +28,7 @@ ls -la  /opt/cni/bin/
 echo "====== Installed cni plugings ==========="
 
 echo "========== Checking log file ${CNI_LOGFILE} =========="
-tail ${CNI_LOGFILE} -n 200
+#tail ${CNI_LOGFILE} -n 200
 echo "========== Checking log file ${CNI_LOGFILE} =========="
 
-ip route | grep cni0
+#ip route | grep cni0
