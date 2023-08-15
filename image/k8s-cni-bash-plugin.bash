@@ -21,31 +21,6 @@ logger() {
 }
 
 
-adddate() {
-    while IFS= read -r line; do
-        printf '%s %s\n' "$(date)" "$line";
-    done
-}
-
-allocate_ip(){
-	for ip in "${all_ips[@]}"
-	do
-		reserved=false
-		for reserved_ip in "${reserved_ips[@]}"
-		do
-			if [ "$ip" = "$reserved_ip" ]; then
-				reserved=true
-				break
-			fi
-		done
-		if [ "$reserved" = false ] ; then
-			echo "$ip" >> $IP_STORE
-			echo "$ip"
-			return
-		fi
-	done
-}
-
 # Create an iptables rule only if it doesn't yet exist
 ensure() {
   eval "$(sed 's/-A/-C/' <<<"$@")" &>/dev/null || eval "$@"
@@ -109,9 +84,9 @@ ADD)
  # The lock provides mutual exclusivity (at most one process in the critical
     # section) and synchronisation (no process reaches the Pod-specific setup
     # before the one-time setup has been fully completed at least once).
-    #{
+    {
       # Acquire lock, or wait if it is already taken
-      #flock 100
+      flock 100
 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
       # Begin of critical section
@@ -135,7 +110,7 @@ ADD)
       # Set up NAT for traffic leaving the cluster (replace Pod IP with node IP)
       logger "Set up NAT for traffic leaving the cluster (replace Pod IP with node IP): $pod_cidr, $pod_network"
       # TODO Not working YET
-      #ptables -t nat -N MY_CNI_MASQUERADE &>/dev/null
+      #iptables -t nat -N MY_CNI_MASQUERADE &>/dev/null
       #ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$pod_cidr" -j RETURN
       #ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$pod_network" -j RETURN
       #ensure iptables -t nat -A MY_CNI_MASQUERADE -j MASQUERADE
@@ -145,7 +120,7 @@ ADD)
       # End of critical section
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
       logger "End of critical section: $pod_cidr, $pod_network"
-    #}  # 100>/tmp/k8s-cni-bash-plugin.lock
+    }  100>/tmp/k8s-cni-bash-plugin.lock
 
     #--------------------------------------------------------------------------#
     # Display all input paramneters
