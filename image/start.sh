@@ -10,14 +10,15 @@ node_number=$(($node_number))
 echo "Node $CNI_HOSTNAME number: ${node_number}"
 
 echo "======== Configuration ========="
-cat /cni/10-k8s-cni-bash-plugin.conf
 export $(cat k8s-cni-bash-plugin.env)
 printenv | grep CNI
 echo "======== Configuration ========="
 # included via configmap
 cp /tmp/k8s-cni-bash-plugin/10-k8s-cni-bash-plugin.conf /etc/cni/net.d/10-k8s-cni-bash-plugin.conf
-
+echo "======== conf template ========="
+cat /cni/10-k8s-cni-bash-plugin.conf
 sed -i "s/.x./.$node_number./" /etc/cni/net.d/10-k8s-cni-bash-plugin.conf
+echo "======== conf template ater changine node number ========="
 cat /etc/cni/net.d/10-k8s-cni-bash-plugin.conf
 echo "====== Installed cni plugings ==========="
 cp /cni/k8s-cni-bash-plugin.bash /opt/cni/bin/k8s-cni-bash-plugin
