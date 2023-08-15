@@ -120,11 +120,11 @@ ADD)
       # Set up NAT for traffic leaving the cluster (replace Pod IP with node IP)
       logger "Set up NAT for traffic leaving the cluster (replace Pod IP with node IP): $pod_cidr, $pod_network"
       # TODO Not working YET
-      #iptables -t nat -N MY_CNI_MASQUERADE &>/dev/null
-      #ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$host_network" -j RETURN
-      #ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$pod_network" -j RETURN
-      #ensure iptables -t nat -A MY_CNI_MASQUERADE -j MASQUERADE
-      #ensure iptables -t nat -A POSTROUTING -s "$pod_cidr" -j MY_CNI_MASQUERADE
+      iptables -t nat -N MY_CNI_MASQUERADE &>/dev/null
+      ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$host_network" -j RETURN
+      ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$pod_network" -j RETURN
+      ensure iptables -t nat -A MY_CNI_MASQUERADE -j MASQUERADE
+      ensure iptables -t nat -A POSTROUTING -s "$pod_cidr" -j MY_CNI_MASQUERADE
 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
       # End of critical section
