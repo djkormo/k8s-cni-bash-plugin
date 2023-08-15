@@ -10,7 +10,7 @@ data:
         "name": "k8s-cni-bash-plugin",
         "type": "k8s-cni-bash-plugin",
         "bridge": "cni0",
-        "hostnetwork: "10.244.0.0/16",
+        "host_network": "10.244.0.0/16",
         "podnetwork": "10.240.0.0/16",
         "podcidr": "10.240.x.0/24"
     }
