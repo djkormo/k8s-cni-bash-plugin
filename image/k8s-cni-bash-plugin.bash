@@ -65,15 +65,15 @@ logger "CNI_LOGFILE: ${CNI_LOGFILE}"
 #set -x
 
 # Read cni configuration file
-#host_network=$(echo $cniconf | jq -r ".hostnetwork")
-pod_network=$(echo $cniconf | jq -r ".podnetwork")
+host_network=$(echo $cniconf | jq -r ".host_network")
+pod_network=$(echo $cniconf | jq -r ".pod_network")
 bridge_interface=$(echo $cniconf | jq -r ".bridge")
-podcidr=$(echo $cniconf | jq -r ".podcidr")
-podcidr_gw=$(echo $podcidr | sed "s:0/24:1:g")
-subnet_mask_size=$(echo $podcidr | awk -F  "/" '{print $2}')
+pod_cidr=$(echo $cniconf | jq -r ".pod_cidr")
+pod_cidr_gw=$(echo $pod_cidr | sed "s:0/24:1:g")
+subnet_mask_size=$(echo $pod_cidr | awk -F  "/" '{print $2}')
 
 # Prepare NetConf for host-local IPAM plugin (add 'ipam' field)
-ipam_netconf=$(jq ". += {ipam:{subnet:\"$podcidr\", gateway:\"$podcidr_gw\"}}" <<<"$cniconf")
+ipam_netconf=$(jq ". += {ipam:{subnet:\"$pod_cidr\", gateway:\"$pod_cidr_gw\"}}" <<<"$cniconf")
 
 #logger "ipam_netconf: $ipam_netconf"
 logger "CNI_COMMAND=$CNI_COMMAND, CNI_CONTAINERID=$CNI_CONTAINERID, CNI_NETNS=$CNI_NETNS, CNI_IFNAME=$CNI_IFNAME, CNI_ARGS=$CNI_ARGS, CNI_PATH=$CNI_PATH\n$cniconf\n$ipam_netconf"
@@ -128,23 +128,23 @@ ADD)
       fi	
     
       # Allow forwarding of packets in default network namespace to/from Pods
-      logger "Allow forwarding of packets in default network namespace to/from Pods: $podcidr"
-      ensure iptables -A FORWARD -s "$podcidr" -j ACCEPT
-      ensure iptables -A FORWARD -d "$podcidr" -j ACCEPT
+      logger "Allow forwarding of packets in default network namespace to/from Pods: $pod_cidr"
+      ensure iptables -A FORWARD -s "$pod_cidr" -j ACCEPT
+      ensure iptables -A FORWARD -d "$pod_cidr" -j ACCEPT
 
       # Set up NAT for traffic leaving the cluster (replace Pod IP with node IP)
-      logger "Set up NAT for traffic leaving the cluster (replace Pod IP with node IP): $podcidr, $pod_network"
+      logger "Set up NAT for traffic leaving the cluster (replace Pod IP with node IP): $pod_cidr, $pod_network"
       # TODO Not working YET
       #ptables -t nat -N MY_CNI_MASQUERADE &>/dev/null
-      #ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$podcidr" -j RETURN
+      #ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$pod_cidr" -j RETURN
       #ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$pod_network" -j RETURN
       #ensure iptables -t nat -A MY_CNI_MASQUERADE -j MASQUERADE
-      #ensure iptables -t nat -A POSTROUTING -s "$podcidr" -j MY_CNI_MASQUERADE
+      #ensure iptables -t nat -A POSTROUTING -s "$pod_cidr" -j MY_CNI_MASQUERADE
 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
       # End of critical section
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-      logger "End of critical section: $podcidr, $pod_network"
+      logger "End of critical section: $pod_cidr, $pod_network"
     #}  # 100>/tmp/k8s-cni-bash-plugin.lock
 
     #--------------------------------------------------------------------------#
@@ -152,8 +152,8 @@ ADD)
     #--------------------------------------------------------------------------#
     logger "CNI_COMMAND: $CNI_COMMAND configuration"
     logger "CNI_COMMAND:  $CNI_COMMAND"
-    logger "Adding IP for Pod CIDR: $podcidr"  
-    logger "GatewayIP $podcidr_gw" 
+    logger "Adding IP for Pod CIDR: $pod_cidr"  
+    logger "GatewayIP $pod_cidr_gw" 
     logger "IP Mask $subnet_mask_size" 
     logger "CNI_IFNAME: $CNI_IFNAME" 
     logger "CNI_NETNS: $CNI_NETNS"  
@@ -228,9 +228,6 @@ ADD)
     logger "Ipam response:\n$response"
     logger "CNI_COMMAND : $CNI_COMMAND end"
     echo "$response" >&3
-    #output=$(printf "${output_template}" $CNI_IFNAME $mac $CNI_NETNS $address $podcidr_gw)
-    #logger $output
-    #echo "$output"
 	    
 ;;
 
