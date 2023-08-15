@@ -38,6 +38,16 @@ logger "CNI_LOGFILE: ${CNI_LOGFILE}"
 #set -u
 #set -e
 #set -x
+# example of  cni configuration
+#    {
+#        "cniVersion": "0.3.1",
+#        "name": "k8s-cni-bash-plugin",
+#        "type": "k8s-cni-bash-plugin",
+#        "bridge": "cni0",
+#        "host_network": "10.244.0.0/16",
+#        "pod_network": "10.240.0.0/16",
+#        "pod_cidr": "10.240.x.0/24"
+#    }
 
 # Read cni configuration file
 host_network=$(echo $cniconf | jq -r ".host_network")
@@ -103,15 +113,15 @@ ADD)
       fi	
     
       # Allow forwarding of packets in default network namespace to/from Pods
-      logger "Allow forwarding of packets in default network namespace to/from Pods: $pod_cidr"
-      ensure iptables -A FORWARD -s "$pod_cidr" -j ACCEPT
-      ensure iptables -A FORWARD -d "$pod_cidr" -j ACCEPT
+      logger "Allow forwarding of packets in default network namespace to/from Pods: $pod_network"
+      ensure iptables -A FORWARD -s "$pod_network" -j ACCEPT
+      ensure iptables -A FORWARD -d "$pod_network" -j ACCEPT
 
       # Set up NAT for traffic leaving the cluster (replace Pod IP with node IP)
       logger "Set up NAT for traffic leaving the cluster (replace Pod IP with node IP): $pod_cidr, $pod_network"
       # TODO Not working YET
       #iptables -t nat -N MY_CNI_MASQUERADE &>/dev/null
-      #ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$pod_cidr" -j RETURN
+      #ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$host_network" -j RETURN
       #ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$pod_network" -j RETURN
       #ensure iptables -t nat -A MY_CNI_MASQUERADE -j MASQUERADE
       #ensure iptables -t nat -A POSTROUTING -s "$pod_cidr" -j MY_CNI_MASQUERADE
