@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: chess-ai
+  name: chess-ai-deployment
   namespace: default
 spec:
   selector:
@@ -27,7 +27,8 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: chess-ai
+  name: chess-ai-service
+  namespace: default
 spec:
   selector:
     app: chess-ai
