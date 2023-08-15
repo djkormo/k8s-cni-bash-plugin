@@ -101,8 +101,8 @@ then
    # Create a VNet with a subnet for nodes and a subnet for pods
 
     az network vnet create -g $AKS_RG --location $AKS_LOCATION --name "vnet_${AKS_NAME}" --address-prefixes 10.0.0.0/8 -o none 
-    az network vnet subnet create -g $AKS_RG --vnet-name "vnet_${AKS_NAME}" --name nodesubnet --address-prefixes 10.240.0.0/16 -o none 
-    az network vnet subnet create -g $AKS_RG --vnet-name "vnet_${AKS_NAME}" --name podsubnet --address-prefixes 10.241.0.0/16 -o none
+    az network vnet subnet create -g $AKS_RG --vnet-name "vnet_${AKS_NAME}" --name nodesubnet --address-prefixes 10.244.0.0/16 -o none 
+    az network vnet subnet create -g $AKS_RG --vnet-name "vnet_${AKS_NAME}" --name podsubnet --address-prefixes 10.240.0.0/16 -o none
 
     # Get the virtual network resource ID
     VNET_ID=$(az network vnet show --resource-group $AKS_RG --name "vnet_$AKS_NAME" --query id -o tsv)
