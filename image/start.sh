@@ -4,6 +4,7 @@
 echo "Initialising CNI bash plugin"
 echo "PATH: ${PATH}"
 node_number=${CNI_HOSTNAME:(-3)}
+echo "Node $CNI_HOSTNAME number: ${node_number}"
 #convert to int
 node_number=$(($node_number))
 echo "Node $CNI_HOSTNAME number: ${node_number}"
