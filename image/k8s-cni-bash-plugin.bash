@@ -65,7 +65,7 @@ logger "CNI_LOGFILE: ${CNI_LOGFILE}"
 #set -x
 
 # Read cni configuration file
-host_network=$(echo $cniconf | jq -r ".hostnetwork")
+#host_network=$(echo $cniconf | jq -r ".hostnetwork")
 pod_network=$(echo $cniconf | jq -r ".podnetwork")
 bridge_interface=$(echo $cniconf | jq -r ".bridge")
 podcidr=$(echo $cniconf | jq -r ".podcidr")
