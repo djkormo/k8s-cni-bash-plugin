@@ -25,8 +25,8 @@ chmod +x /opt/cni/bin/k8s-cni-bash-plugin
 ls -la  /opt/cni/bin/
 echo "====== Installed cni plugings ==========="
 
-echo "========== Checking log file ${CNI_LOGFILE} =========="
-tail ${CNI_LOGFILE}
-echo "========== Checking log file ${CNI_LOGFILE} =========="
+#echo "========== Checking log file ${CNI_LOGFILE} =========="
+#tail ${CNI_LOGFILE}
+#echo "========== Checking log file ${CNI_LOGFILE} =========="
 
 ip route | grep cni0
