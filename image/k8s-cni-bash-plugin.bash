@@ -134,7 +134,7 @@ ADD)
       ensure iptables -t nat -A "$my_cni_masquerade" -j MASQUERADE
       
       logger "iptables -t nat -A POSTROUTING -s $pod_cidr -j $my_cni_masquerade"
-      ensure iptables -t nat -A POSTROUTING -s "$pod_cidr" -j $"my_cni_masquerade"
+      ensure iptables -t nat -A POSTROUTING -s "$pod_cidr" -j "$my_cni_masquerade"
 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
       # End of critical section
