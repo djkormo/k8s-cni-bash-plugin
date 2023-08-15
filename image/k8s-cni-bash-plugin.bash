@@ -65,7 +65,8 @@ logger "CNI_LOGFILE: ${CNI_LOGFILE}"
 set -x
 
 # Read cni configuration file
-host_network=$(echo $cniconf | jq -r ".network")
+host_network=$(echo $cniconf | jq -r ".hostnetwork")
+pod_network=$(echo $cniconf | jq -r ".podnetwork")
 bridge_interface=$(echo $cniconf | jq -r ".bridge")
 podcidr=$(echo $cniconf | jq -r ".podcidr")
 podcidr_gw=$(echo $podcidr | sed "s:0/24:1:g")
@@ -132,18 +133,18 @@ ADD)
       ensure iptables -A FORWARD -d "$podcidr" -j ACCEPT
 
       # Set up NAT for traffic leaving the cluster (replace Pod IP with node IP)
-      logger "Set up NAT for traffic leaving the cluster (replace Pod IP with node IP): $podcidr, $host_network"
+      logger "Set up NAT for traffic leaving the cluster (replace Pod IP with node IP): $podcidr, $pod_network"
       # TODO Not working YET
       #ptables -t nat -N MY_CNI_MASQUERADE &>/dev/null
       #ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$podcidr" -j RETURN
-      #ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$host_network" -j RETURN
+      #ensure iptables -t nat -A MY_CNI_MASQUERADE -d "$pod_network" -j RETURN
       #ensure iptables -t nat -A MY_CNI_MASQUERADE -j MASQUERADE
       #ensure iptables -t nat -A POSTROUTING -s "$podcidr" -j MY_CNI_MASQUERADE
 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
       # End of critical section
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-      logger "End of critical section: $podcidr, $host_network"
+      logger "End of critical section: $podcidr, $pod_network"
     #}  # 100>/tmp/k8s-cni-bash-plugin.lock
 
     #--------------------------------------------------------------------------#
