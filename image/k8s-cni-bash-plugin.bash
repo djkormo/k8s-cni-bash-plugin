@@ -62,7 +62,7 @@ logger "CNI_LOGFILE: ${CNI_LOGFILE}"
 
 #set -u
 #set -e
-set -x
+#set -x
 
 # Read cni configuration file
 host_network=$(echo $cniconf | jq -r ".hostnetwork")
