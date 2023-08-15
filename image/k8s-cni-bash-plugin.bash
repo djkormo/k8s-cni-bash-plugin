@@ -125,16 +125,16 @@ ADD)
       #iptables -t nat -N $my_cni_masquerade &>/dev/null
       
       logger "iptables -t nat -A $my_cni_masquerade -d $host_network -j RETURN"
-      #ensure iptables -t nat -A $my_cni_masquerade -d "$host_network" -j RETURN
+      ensure iptables -t nat -A $my_cni_masquerade -d "$host_network" -j RETURN
       
       logger "iptables -t nat -A $my_cni_masquerade -d $pod_network -j RETURN"
-      #ensure iptables -t nat -A $my_cni_masquerade -d "$pod_network" -j RETURN
+      ensure iptables -t nat -A $my_cni_masquerade -d "$pod_network" -j RETURN
       
       logger "iptables -t nat -A $my_cni_masquerade -j MASQUERADE"
-      #ensure iptables -t nat -A $my_cni_masquerade -j MASQUERADE
+      ensure iptables -t nat -A $my_cni_masquerade -j MASQUERADE
       
       logger "iptables -t nat -A POSTROUTING -s $pod_cidr -j $my_cni_masquerade"
-      #ensure iptables -t nat -A POSTROUTING -s "$pod_cidr" -j my_cni_masquerade
+      ensure iptables -t nat -A POSTROUTING -s "$pod_cidr" -j my_cni_masquerade
 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
       # End of critical section
