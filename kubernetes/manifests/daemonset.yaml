@@ -25,7 +25,7 @@ spec:
         operator: Exists
 
       initContainers:
-      - name: k8s-cni-bash-plugin-init
+      - name: init
         image: djkormo/k8s-cni-bash-plugin:main
         imagePullPolicy: Always
         command: ["/cni/start.sh"]
@@ -71,7 +71,7 @@ spec:
           subPath: 10-k8s-cni-bash-plugin.conf
 
       containers:
-      - name: k8s-cni-bash-plugin
+      - name: cni
         image: djkormo/k8s-cni-bash-plugin
         command: ["/bin/sh", "-c"]
         args: ["sleep 365d"]
