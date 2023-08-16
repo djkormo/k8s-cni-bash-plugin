@@ -2,7 +2,7 @@
 
 if [[ ${DEBUG} -gt 0 ]]; then set -x; fi
 
-my_cni_masquerade=MY_CNI_MASQUERADE
+my_cni_masquerade=K8S-CNI-BASH
 # based on
 
 # https://github.com/s-matyukevich/bash-cni-plugin/blob/master/bash-cni
@@ -134,12 +134,12 @@ ADD)
 
       is_cni_maskarade_added=$(iptables -L -t nat | grep ${my_cni_masquerade})
       logger "is_cni_maskarade_added: $is_cni_maskarade_added"	
-       if [ -z "$is_cni_maskarade_added" ]
-	then
-	  iptables -t nat -N "$my_cni_masquerade"
-	else
+      # if [ -z "$is_cni_maskarade_added" ]
+      #	then
+      # 	  iptables -t nat -N "$my_cni_masquerade"
+      #	else
 	      logger "Not needed to add chain iptables -t nat -N  : $my_cni_masquerade "
-	fi
+      #	fi
       
 
       logger "iptables -t nat -A $my_cni_masquerade -d $host_network -j RETURN"
