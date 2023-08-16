@@ -1,4 +1,4 @@
-name: project operator pipeline
+name: cni bash pipeline
 
 on:
   push:
