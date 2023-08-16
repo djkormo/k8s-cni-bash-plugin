@@ -37,7 +37,8 @@ logger "CNI_LOGFILE: ${CNI_LOGFILE}"
 
 #set -u
 #set -e
-#set -x
+set -x
+set -o pipefail
 # example of  cni configuration
 #    {
 #        "cniVersion": "0.3.1",
