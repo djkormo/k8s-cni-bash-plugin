@@ -115,7 +115,11 @@ ADD)
     
       # Allow forwarding of packets in default network namespace to/from Pods
       logger "Allow forwarding of packets in default network namespace to/from Pods: $pod_network"
+      
+      logger "iptables -A FORWARD -s $pod_network -j ACCEPT"
       ensure iptables -A FORWARD -s "$pod_network" -j ACCEPT
+      
+      logger "iptables -A FORWARD -d $pod_network -j ACCEPT4"
       ensure iptables -A FORWARD -d "$pod_network" -j ACCEPT
 
       # Set up NAT for traffic leaving the cluster (replace Pod IP with node IP)
@@ -130,7 +134,7 @@ ADD)
 
       is_cni_maskarade_added=$(iptables -L -t nat | grep ${my_cni_masquerade})
       logger "is_cni_maskarade_added: $is_cni_maskarade_added"	
-     if [ -z "$is_cni_maskarade_added" ]
+       if [ -z "$is_cni_maskarade_added" ]
 	then
 	  iptables -t nat -N "$my_cni_masquerade"
 	else
