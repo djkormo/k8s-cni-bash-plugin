@@ -122,10 +122,10 @@ ADD)
       
       # TODO Not working YET
       logger "iptables -t nat -N $my_cni_masquerade &>/dev/null"
-      if ! iptables -t nat -N "$my_cni_masquerade" &>/dev/null; then
-        iptables -t nat -N "$my_cni_masquerade" &>/dev/null
+      if iptables -t nat -N "$my_cni_masquerade" &>/dev/null; then
+        iptables -t nat -N "$my_cni_masquerade"
       else
-        logger "Not needed to add chain : $my_cni_masquerade "
+        logger "Not needed to add chain iptables -t nat -N  : $my_cni_masquerade "
       fi
       logger "iptables -t nat -A $my_cni_masquerade -d $host_network -j RETURN"
       ensure iptables -t nat -A "$my_cni_masquerade" -d "$host_network" -j RETURN
