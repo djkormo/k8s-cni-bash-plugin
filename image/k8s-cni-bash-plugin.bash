@@ -37,7 +37,7 @@ logger "CNI_LOGFILE: ${CNI_LOGFILE}"
 
 #set -u
 #set -e
-set -x
+#set -x
 set -o pipefail
 # example of  cni configuration
 #    {
@@ -118,10 +118,10 @@ ADD)
       logger "Allow forwarding of packets in default network namespace to/from Pods: $pod_network"
       
       logger "iptables -A FORWARD -s $pod_network -j ACCEPT"
-      ensure iptables -A FORWARD -s "$pod_network" -j ACCEPT
+      #ensure iptables -A FORWARD -s "$pod_network" -j ACCEPT
       
       logger "iptables -A FORWARD -d $pod_network -j ACCEPT4"
-      ensure iptables -A FORWARD -d "$pod_network" -j ACCEPT
+      #ensure iptables -A FORWARD -d "$pod_network" -j ACCEPT
 
       # Set up NAT for traffic leaving the cluster (replace Pod IP with node IP)
       logger "Set up NAT for traffic leaving the cluster (replace Pod IP with node IP): $pod_cidr -> $host_network"
@@ -144,16 +144,16 @@ ADD)
       
 
       logger "iptables -t nat -A $my_cni_masquerade -d $host_network -j RETURN"
-      ensure iptables -t nat -A "$my_cni_masquerade" -d "$host_network" -j RETURN
+      #ensure iptables -t nat -A "$my_cni_masquerade" -d "$host_network" -j RETURN
       
       logger "iptables -t nat -A "$my_cni_masquerade" -d $pod_network -j RETURN"
-      ensure iptables -t nat -A "$my_cni_masquerade" -d "$pod_network" -j RETURN
+      #ensure iptables -t nat -A "$my_cni_masquerade" -d "$pod_network" -j RETURN
       
       logger "iptables -t nat -A "$my_cni_masquerade" -j MASQUERADE"
-      ensure iptables -t nat -A "$my_cni_masquerade" -j MASQUERADE
+      #ensure iptables -t nat -A "$my_cni_masquerade" -j MASQUERADE
       
       logger "iptables -t nat -A POSTROUTING -s $pod_cidr -j $my_cni_masquerade"
-      ensure iptables -t nat -A POSTROUTING -s "$pod_cidr" -j "$my_cni_masquerade"
+      #ensure iptables -t nat -A POSTROUTING -s "$pod_cidr" -j "$my_cni_masquerade"
 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
       # End of critical section
