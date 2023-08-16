@@ -120,16 +120,23 @@ ADD)
       # Set up NAT for traffic leaving the cluster (replace Pod IP with node IP)
       logger "Set up NAT for traffic leaving the cluster (replace Pod IP with node IP): $pod_cidr -> $host_network"
       
-      # TODO Not working YET
-      logger "iptables -t nat -N $my_cni_masquerade &>/dev/null"
-      if iptables -t nat -N "$my_cni_masquerade" &>/dev/null; then
-        iptables -t nat -N "$my_cni_masquerade"
-      else
-        logger "Not needed to add chain iptables -t nat -N  : $my_cni_masquerade "
-      fi
+      #logger "iptables -t nat -N $my_cni_masquerade &>/dev/null"
+      #if iptables -t nat -N "$my_cni_masquerade" &>/dev/null; then
+      #  iptables -t nat -N "$my_cni_masquerade"
+      #else
+      #  logger "Not needed to add chain iptables -t nat -N  : $my_cni_masquerade "
+      #fi
 
       is_cni_maskarade_added=$(iptables -L -t nat | grep ${my_cni_masquerade})
-      logger "is_cni_maskarade_added: $is_cni_maskarade_added"
+      logger "is_cni_maskarade_added: $is_cni_maskarade_added"	
+     if [ -z "$is_cni_maskarade_added" ]
+	then
+	  iptables -t nat -N "$my_cni_masquerade"
+	else
+	      logger "Not needed to add chain iptables -t nat -N  : $my_cni_masquerade "
+	fi
+      
+
       logger "iptables -t nat -A $my_cni_masquerade -d $host_network -j RETURN"
       ensure iptables -t nat -A "$my_cni_masquerade" -d "$host_network" -j RETURN
       
