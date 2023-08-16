@@ -37,8 +37,8 @@ logger "CNI_LOGFILE: ${CNI_LOGFILE}"
 
 #set -u
 #set -e
-#set -x
-set -o pipefail
+set -x
+#set -o pipefail
 # example of  cni configuration
 #    {
 #        "cniVersion": "0.3.1",
@@ -120,7 +120,7 @@ ADD)
       logger "iptables -A FORWARD -s $pod_network -j ACCEPT"
       #ensure iptables -A FORWARD -s "$pod_network" -j ACCEPT
       
-      logger "iptables -A FORWARD -d $pod_network -j ACCEPT4"
+      logger "iptables -A FORWARD -d $pod_network -j ACCEPT"
       #ensure iptables -A FORWARD -d "$pod_network" -j ACCEPT
 
       # Set up NAT for traffic leaving the cluster (replace Pod IP with node IP)
