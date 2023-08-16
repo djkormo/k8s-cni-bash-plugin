@@ -56,7 +56,8 @@ bridge_interface=$(echo $cniconf | jq -r ".bridge")
 pod_cidr=$(echo $cniconf | jq -r ".pod_cidr")
 pod_cidr_gw=$(echo $pod_cidr | sed "s:0/24:1:g")
 subnet_mask_size=$(echo $pod_cidr | awk -F  "/" '{print $2}')
-
+service_cidr=$(echo $cniconf | jq -r ".service_cidr")
+coredns_ip=$(echo $cniconf | jq -r ".coredns_ip")
 # Prepare NetConf for host-local IPAM plugin (add 'ipam' field)
 ipam_netconf=$(jq ". += {ipam:{subnet:\"$pod_cidr\", gateway:\"$pod_cidr_gw\"}}" <<<"$cniconf")
 
