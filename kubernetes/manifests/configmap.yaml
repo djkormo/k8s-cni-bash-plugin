@@ -12,6 +12,9 @@ data:
         "bridge": "cni0",
         "host_network": "10.244.0.0/16",
         "pod_network": "10.240.0.0/16",
-        "pod_cidr": "10.240.x.0/24"
+        "pod_cidr": "10.240.x.0/24",
+        "service_cidr": "10.0.0.0/16",
+        "coredns_ip": "10.0.0.11"
+
     }
 
