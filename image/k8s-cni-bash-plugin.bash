@@ -133,13 +133,13 @@ ADD)
       #  logger "Not needed to add chain iptables -t nat -N  : $my_cni_masquerade "
       #fi
 
-      is_cni_maskarade_added=$(iptables -L -t nat | grep ${my_cni_masquerade})
-      logger "is_cni_maskarade_added: $is_cni_maskarade_added"	
+      #is_cni_maskarade_added=$(iptables -L -t nat |grep ${my_cni_masquerade})
+      #logger "is_cni_maskarade_added: $is_cni_maskarade_added"	
       # if [ -z "$is_cni_maskarade_added" ]
       #	then
       # 	  iptables -t nat -N "$my_cni_masquerade"
       #	else
-	      logger "Not needed to add chain iptables -t nat -N  : $my_cni_masquerade "
+      #	      logger "Not needed to add chain iptables -t nat -N  : $my_cni_masquerade "
       #	fi
       
 
