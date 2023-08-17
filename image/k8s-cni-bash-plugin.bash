@@ -26,6 +26,10 @@ ensure() {
   eval "$(sed 's/-A/-C/' <<<"$@")" &>/dev/null || eval "$@"
 }
 
+iptables_configuration()
+{
+  # TODO 
+}
 
 #exec 3>&1 # make stdout available as fd 3 for the result
 log=/var/log/cni.log #$CNI_LOGFILE # TODO , should be based on env 
@@ -154,6 +158,10 @@ ADD)
       
       logger "iptables -t nat -A POSTROUTING -s $pod_cidr -j $my_cni_masquerade"
       #ensure iptables -t nat -A POSTROUTING -s "$pod_cidr" -j "$my_cni_masquerade"
+      
+      # Allow outgoing internet 
+      logger "iptables -t nat -A POSTROUTING -s $pod_cidr ! -o $bridge_interface -j MASQUERADE"
+      #ensure iptables -t nat -A POSTROUTING -s "$pod_cidr" ! -o "$bridge_interface" -j MASQUERADE"
 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
       # End of critical section
