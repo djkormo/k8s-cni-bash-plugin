@@ -26,9 +26,9 @@ ensure() {
   eval "$(sed 's/-A/-C/' <<<"$@")" &>/dev/null || eval "$@"
 }
 
-iptables_configuration() {
+#iptables_configuration() {
   # TODO 
-}
+#}
 
 #exec 3>&1 # make stdout available as fd 3 for the result
 log=/var/log/cni.log #$CNI_LOGFILE # TODO , should be based on env 
