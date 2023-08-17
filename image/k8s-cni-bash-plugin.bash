@@ -26,8 +26,7 @@ ensure() {
   eval "$(sed 's/-A/-C/' <<<"$@")" &>/dev/null || eval "$@"
 }
 
-iptables_configuration()
-{
+iptables_configuration() {
   # TODO 
 }
 
