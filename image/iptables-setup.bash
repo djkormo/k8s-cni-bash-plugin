@@ -59,9 +59,11 @@ iptables -F
       #	fi
       
       #iptables -t nat -N "$my_cni_masquerade" &>/dev/null
+      set  +e
       echo "iptables -t nat -N $my_cni_masquerade"
       iptables -t nat -N "$my_cni_masquerade"
-      
+      set -e 
+  
       echo "iptables -t nat -A $my_cni_masquerade -d $host_network -j RETURN"
       ensure iptables -t nat -A "$my_cni_masquerade" -d "$host_network" -j RETURN
       
@@ -77,3 +79,5 @@ iptables -F
       # Allow outgoing internet 
       echo "iptables -t nat -A POSTROUTING -s $pod_cidr ! -o $bridge_interface -j MASQUERADE"
       ensure iptables -t nat -A POSTROUTING -s "$pod_cidr" ! -o "$bridge_interface" -j MASQUERADE
+      
+      iptables -L --line-numbers -v
