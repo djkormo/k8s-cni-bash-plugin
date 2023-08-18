@@ -38,9 +38,9 @@ logger "CNI_CONFIG: $cniconf"
 logger "PATH: ${PATH}"
 logger "CNI_LOGFILE: ${CNI_LOGFILE}"
 
-#set -u
-#set -e
-set -x
+set -u
+set -e
+#set -x
 #set -o pipefail
 # example of  cni configuration
 #    {
