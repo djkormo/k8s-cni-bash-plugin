@@ -31,4 +31,6 @@ echo "========== Checking log file ${CNI_LOGFILE} =========="
 #tail ${CNI_LOGFILE} -n 200
 echo "========== Checking log file ${CNI_LOGFILE} =========="
 
-#ip route | grep cni0
+
+cp /cni/iptables-setup.bash /tmp/k8s-cni-bash-plugin/iptables-setup.bash
+
