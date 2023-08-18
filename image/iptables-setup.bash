@@ -73,4 +73,4 @@ coredns_ip=$(echo $cniconf | jq -r ".coredns_ip")
       
       # Allow outgoing internet 
       echo "iptables -t nat -A POSTROUTING -s $pod_cidr ! -o $bridge_interface -j MASQUERADE"
-      ensure iptables -t nat -A POSTROUTING -s "$pod_cidr" ! -o "$bridge_interface" -j MASQUERADE"
+      ensure iptables -t nat -A POSTROUTING -s "$pod_cidr" ! -o "$bridge_interface" -j MASQUERADE
