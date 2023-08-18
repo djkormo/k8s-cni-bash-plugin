@@ -14,7 +14,7 @@ my_cni_masquerade=K8S-CNI-BASH
 set -u
 #set -x
 set -e
-
+set -o pipefail
 
 
 # Read cni configuration file
@@ -57,7 +57,7 @@ coredns_ip=$(echo $cniconf | jq -r ".coredns_ip")
       #	      logger "Not needed to add chain iptables -t nat -N  : $my_cni_masquerade "
       #	fi
       
-      iptables -t nat -N "$my_cni_masquerade" &>/dev/null
+      #iptables -t nat -N "$my_cni_masquerade" &>/dev/null
 
       echo "iptables -t nat -A $my_cni_masquerade -d $host_network -j RETURN"
       ensure iptables -t nat -A "$my_cni_masquerade" -d "$host_network" -j RETURN
@@ -65,7 +65,7 @@ coredns_ip=$(echo $cniconf | jq -r ".coredns_ip")
       echo "iptables -t nat -A "$my_cni_masquerade" -d $pod_network -j RETURN"
       ensure iptables -t nat -A "$my_cni_masquerade" -d "$pod_network" -j RETURN
       
-      echo "iptables -t nat -A "$my_cni_masquerade" -j MASQUERADE"
+      echo "iptables -t nat -A $my_cni_masquerade -j MASQUERADE"
       ensure iptables -t nat -A "$my_cni_masquerade" -j MASQUERADE
       
       echo "iptables -t nat -A POSTROUTING -s $pod_cidr -j $my_cni_masquerade"
