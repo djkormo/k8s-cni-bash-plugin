@@ -9,6 +9,8 @@ ensure() {
 
 cniconf=`cat /etc/cni/net.d/10-k8s-cni-bash-plugin.conf`
 
+my_cni_masquerade=K8S-CNI-BASH
+
 set -u
 set -x
 set -e
@@ -24,6 +26,7 @@ pod_cidr_gw=$(echo $pod_cidr | sed "s:0/24:1:g")
 subnet_mask_size=$(echo $pod_cidr | awk -F  "/" '{print $2}')
 service_cidr=$(echo $cniconf | jq -r ".service_cidr")
 coredns_ip=$(echo $cniconf | jq -r ".coredns_ip")
+
 
 
 # Allow forwarding of packets in default network namespace to/from Pods
@@ -54,6 +57,7 @@ coredns_ip=$(echo $cniconf | jq -r ".coredns_ip")
       #	      logger "Not needed to add chain iptables -t nat -N  : $my_cni_masquerade "
       #	fi
       
+      iptables -t nat -N "$my_cni_masquerade" &>/dev/null
 
       echo "iptables -t nat -A $my_cni_masquerade -d $host_network -j RETURN"
       #ensure iptables -t nat -A "$my_cni_masquerade" -d "$host_network" -j RETURN
