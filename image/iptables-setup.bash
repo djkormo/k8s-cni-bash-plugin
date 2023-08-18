@@ -25,27 +25,18 @@ subnet_mask_size=$(echo $pod_cidr | awk -F  "/" '{print $2}')
 service_cidr=$(echo $cniconf | jq -r ".service_cidr")
 coredns_ip=$(echo $cniconf | jq -r ".coredns_ip")
 
-      # Create bridge only if it doesn't yet exist (default $bridge_interface)
-      if ! ip link show $bridge_interface &>/dev/null; then
-        ip link add $bridge_interface type bridge
-        ip address add "$ipam_bridge_ip/24" dev $bridge_interface
-        ip link set $bridge_interface up
-      
-      else
-        logger "Not needed to configure bridge : $bridge_interface with IP $ipam_bridge_ip/24"
-      fi	
-    
-      # Allow forwarding of packets in default network namespace to/from Pods
-      logger "Allow forwarding of packets in default network namespace to/from Pods: $pod_network"
-      
-      logger "iptables -A FORWARD -s $pod_network -j ACCEPT"
-      #ensure iptables -A FORWARD -s "$pod_network" -j ACCEPT
-      
-      logger "iptables -A FORWARD -d $pod_network -j ACCEPT"
-      #ensure iptables -A FORWARD -d "$pod_network" -j ACCEPT
 
-      # Set up NAT for traffic leaving the cluster (replace Pod IP with node IP)
-      logger "Set up NAT for traffic leaving the cluster (replace Pod IP with node IP): $pod_cidr -> $host_network"
+# Allow forwarding of packets in default network namespace to/from Pods
+  echo "Allow forwarding of packets in default network namespace to/from Pods: $pod_network"
+      
+  echo "iptables -A FORWARD -s $pod_network -j ACCEPT"
+  #ensure iptables -A FORWARD -s "$pod_network" -j ACCEPT
+      
+  echo "iptables -A FORWARD -d $pod_network -j ACCEPT"
+  #ensure iptables -A FORWARD -d "$pod_network" -j ACCEPT
+
+  # Set up NAT for traffic leaving the cluster (replace Pod IP with node IP)
+  echo "Set up NAT for traffic leaving the cluster (replace Pod IP with node IP): $pod_cidr -> $host_network"
       
       #logger "iptables -t nat -N $my_cni_masquerade &>/dev/null"
       #if iptables -t nat -N "$my_cni_masquerade" &>/dev/null; then
@@ -64,18 +55,18 @@ coredns_ip=$(echo $cniconf | jq -r ".coredns_ip")
       #	fi
       
 
-      logger "iptables -t nat -A $my_cni_masquerade -d $host_network -j RETURN"
+      echo "iptables -t nat -A $my_cni_masquerade -d $host_network -j RETURN"
       #ensure iptables -t nat -A "$my_cni_masquerade" -d "$host_network" -j RETURN
       
-      logger "iptables -t nat -A "$my_cni_masquerade" -d $pod_network -j RETURN"
+      echo "iptables -t nat -A "$my_cni_masquerade" -d $pod_network -j RETURN"
       #ensure iptables -t nat -A "$my_cni_masquerade" -d "$pod_network" -j RETURN
       
-      logger "iptables -t nat -A "$my_cni_masquerade" -j MASQUERADE"
+      echo "iptables -t nat -A "$my_cni_masquerade" -j MASQUERADE"
       #ensure iptables -t nat -A "$my_cni_masquerade" -j MASQUERADE
       
-      logger "iptables -t nat -A POSTROUTING -s $pod_cidr -j $my_cni_masquerade"
+      echo "iptables -t nat -A POSTROUTING -s $pod_cidr -j $my_cni_masquerade"
       #ensure iptables -t nat -A POSTROUTING -s "$pod_cidr" -j "$my_cni_masquerade"
       
       # Allow outgoing internet 
-      logger "iptables -t nat -A POSTROUTING -s $pod_cidr ! -o $bridge_interface -j MASQUERADE"
+      echo "iptables -t nat -A POSTROUTING -s $pod_cidr ! -o $bridge_interface -j MASQUERADE"
       #ensure iptables -t nat -A POSTROUTING -s "$pod_cidr" ! -o "$bridge_interface" -j MASQUERADE"
