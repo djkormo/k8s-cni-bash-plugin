@@ -12,7 +12,7 @@ cniconf=`cat /etc/cni/net.d/10-k8s-cni-bash-plugin.conf`
 my_cni_masquerade=K8S-CNI-BASH
 
 set -u
-set -x
+#set -x
 set -e
 
 
