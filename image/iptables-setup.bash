@@ -65,4 +65,7 @@ coredns_ip=$(echo $cniconf | jq -r ".coredns_ip")
   ensure iptables -t nat -A POSTROUTING -s "$pod_cidr" ! -o "$bridge_interface" -j MASQUERADE
       
   iptables -L --line-numbers -v
+  iptables -t filter -nvL
   iptables -t nat -nvL
+  
+ 
