@@ -49,4 +49,30 @@ ping: unknown host portal.azure.com
 ```
 
 
+```
+kubectl -n default exec tool-pod -- nslookup portal.azure.com
+```
+
+<pre>
+Server:         10.0.0.10
+Address:        10.0.0.10:53
+
+Non-authoritative answer:
+portal.azure.com        canonical name = portal.azure.com.trafficmanager.net
+portal.azure.com.trafficmanager.net     canonical name = dual.part-0024.t-0009.t-msedge.net
+dual.part-0024.t-0009.t-msedge.net      canonical name = part-0024.t-0009.t-msedge.net
+Name:   part-0024.t-0009.t-msedge.net
+Address: 2620:1ec:46::52
+Name:   part-0024.t-0009.t-msedge.net
+Address: 2620:1ec:bdf::52
+
+Non-authoritative answer:
+portal.azure.com        canonical name = portal.azure.com.trafficmanager.net
+portal.azure.com.trafficmanager.net     canonical name = dual.part-0024.t-0009.t-msedge.net
+dual.part-0024.t-0009.t-msedge.net      canonical name = part-0024.t-0009.t-msedge.net
+Name:   part-0024.t-0009.t-msedge.net
+Address: 13.107.246.52
+Name:   part-0024.t-0
+</pre>
+
 
