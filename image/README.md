@@ -35,6 +35,9 @@ https://github.com/ronak-agarwal/custom-cni
 
 https://github.com/learnk8s/advanced-networking/blob/master/my-cni-plugin
 
+### iptables and kubernetes
+
+https://www.tkng.io/services/clusterip/dataplane/iptables/
 
 
 ### Considerations 
