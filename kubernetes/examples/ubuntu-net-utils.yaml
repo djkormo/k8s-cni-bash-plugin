@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ubuntu-net-utils-deployment
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: ubuntu
+  replicas: 2 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: ubuntu
+    spec:
+      containers:
+      - name: ubuntu
+        image: smatyukevich/ubuntu-net-utils
+        command:
+          - "bin/bash"
+          - "-c"
+          - "sleep 10000"
