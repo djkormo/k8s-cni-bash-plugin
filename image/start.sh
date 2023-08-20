@@ -32,5 +32,7 @@ echo "========== Checking log file ${CNI_LOGFILE} =========="
 echo "========== Checking log file ${CNI_LOGFILE} =========="
 
 
+cp /cni/cni-add-check.bash /tmp/k8s-cni-bash-plugin/cni-add-check.bash
+cp /cni/cni-del-check.bash /tmp/k8s-cni-bash-plugin/cni-del-check.bash
 cp /cni/iptables-setup.bash /tmp/k8s-cni-bash-plugin/iptables-setup.bash
 
