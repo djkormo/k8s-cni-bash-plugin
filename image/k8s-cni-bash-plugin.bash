@@ -65,9 +65,11 @@ coredns_ip=$(echo $cniconf | jq -r ".coredns_ip")
 # Prepare NetConf for host-local IPAM plugin (add 'ipam' field)
 ipam_netconf=$(jq ". += {ipam:{subnet:\"$pod_cidr\", gateway:\"$pod_cidr_gw\"}}" <<<"$cniconf")
 
-#logger "ipam_netconf: $ipam_netconf"
+set +e
+set +u
 logger "CNI_COMMAND=$CNI_COMMAND, CNI_CONTAINERID=$CNI_CONTAINERID, CNI_NETNS=$CNI_NETNS, CNI_IFNAME=$CNI_IFNAME, CNI_ARGS=$CNI_ARGS, CNI_PATH=$CNI_PATH\n$cniconf\n$ipam_netconf"
-
+set -u
+set -e
 case $CNI_COMMAND in
 # Adding network to pod 
 
