@@ -42,43 +42,27 @@ coredns_ip=$(echo $cniconf | jq -r ".coredns_ip")
   # Set up NAT for traffic leaving the cluster (replace Pod IP with node IP)
   echo "Set up NAT for traffic leaving the cluster (replace Pod IP with node IP): $pod_cidr -> $host_network"
       
-      #logger "iptables -t nat -N $my_cni_masquerade &>/dev/null"
-      #if iptables -t nat -N "$my_cni_masquerade" &>/dev/null; then
-      #  iptables -t nat -N "$my_cni_masquerade"
-      #else
-      #  logger "Not needed to add chain iptables -t nat -N  : $my_cni_masquerade "
-      #fi
-
-      #is_cni_maskarade_added=$(iptables -L -t nat |grep ${my_cni_masquerade})
-      #logger "is_cni_maskarade_added: $is_cni_maskarade_added"	
-      # if [ -z "$is_cni_maskarade_added" ]
-      #	then
-      # 	  iptables -t nat -N "$my_cni_masquerade"
-      #	else
-      #	      logger "Not needed to add chain iptables -t nat -N  : $my_cni_masquerade "
-      #	fi
-      
-      #iptables -t nat -N "$my_cni_masquerade" &>/dev/null
-      set  +e
-      echo "iptables -t nat -N $my_cni_masquerade"
-      iptables -t nat -N "$my_cni_masquerade"
-      set -e 
   
-      echo "iptables -t nat -A $my_cni_masquerade -d $host_network -j RETURN"
-      ensure iptables -t nat -A "$my_cni_masquerade" -d "$host_network" -j RETURN
+  set  +e
+  echo "iptables -t nat -N $my_cni_masquerade"
+  iptables -t nat -N "$my_cni_masquerade"
+  set -e 
+  
+  echo "iptables -t nat -A $my_cni_masquerade -d $host_network -j RETURN"
+  ensure iptables -t nat -A "$my_cni_masquerade" -d "$host_network" -j RETURN
       
-      echo "iptables -t nat -A "$my_cni_masquerade" -d $pod_network -j RETURN"
-      ensure iptables -t nat -A "$my_cni_masquerade" -d "$pod_network" -j RETURN
+  echo "iptables -t nat -A "$my_cni_masquerade" -d $pod_network -j RETURN"
+  ensure iptables -t nat -A "$my_cni_masquerade" -d "$pod_network" -j RETURN
       
-      echo "iptables -t nat -A $my_cni_masquerade -j MASQUERADE"
-      ensure iptables -t nat -A "$my_cni_masquerade" -j MASQUERADE
+  echo "iptables -t nat -A $my_cni_masquerade -j MASQUERADE"
+  ensure iptables -t nat -A "$my_cni_masquerade" -j MASQUERADE
       
-      echo "iptables -t nat -A POSTROUTING -s $pod_cidr -j $my_cni_masquerade"
-      ensure iptables -t nat -A POSTROUTING -s "$pod_cidr" -j "$my_cni_masquerade"
+  echo "iptables -t nat -A POSTROUTING -s $pod_cidr -j $my_cni_masquerade"
+  ensure iptables -t nat -A POSTROUTING -s "$pod_cidr" -j "$my_cni_masquerade"
       
-      # Allow outgoing internet 
-      echo "iptables -t nat -A POSTROUTING -s $pod_cidr ! -o $bridge_interface -j MASQUERADE"
-      ensure iptables -t nat -A POSTROUTING -s "$pod_cidr" ! -o "$bridge_interface" -j MASQUERADE
+  # Allow outgoing internet 
+  echo "iptables -t nat -A POSTROUTING -s $pod_cidr ! -o $bridge_interface -j MASQUERADE"
+  ensure iptables -t nat -A POSTROUTING -s "$pod_cidr" ! -o "$bridge_interface" -j MASQUERADE
       
-      iptables -L --line-numbers -v
-      iptables -t nat -nvL
+  iptables -L --line-numbers -v
+  iptables -t nat -nvL
