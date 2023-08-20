@@ -70,7 +70,7 @@ LINUXNODES () {
         "securityContext": {
           "privileged": true,
           "capabilities": {
-               "add": [ "SYS_PTRACE" ]
+               "add": [ "NET_ADMIN" ]
           }
         },
         "image": "$IMAGE",
