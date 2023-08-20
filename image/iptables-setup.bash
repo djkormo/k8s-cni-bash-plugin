@@ -27,8 +27,8 @@ subnet_mask_size=$(echo $pod_cidr | awk -F  "/" '{print $2}')
 service_cidr=$(echo $cniconf | jq -r ".service_cidr")
 coredns_ip=$(echo $cniconf | jq -r ".coredns_ip")
 
-echo "Flushing iptables rules"
-iptables -F
+#echo "Flushing iptables rules"
+#iptables -F
 
 # Allow forwarding of packets in default network namespace to/from Pods
   echo "Allow forwarding of packets in default network namespace to/from Pods: $pod_network"
