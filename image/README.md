@@ -3,6 +3,8 @@
 
 ### Networking model
 https://sookocheff.com/post/kubernetes/understanding-kubernetes-networking-model/
+https://medium.com/@betz.mark/understanding-kubernetes-networking-pods-7117dd28727
+
 
 ### CNI and kubelet
 https://www.waytoeasylearn.com/learn/cni-in-kubernetes/
@@ -38,6 +40,7 @@ https://github.com/learnk8s/advanced-networking/blob/master/my-cni-plugin
 ### iptables and kubernetes
 
 https://www.tkng.io/services/clusterip/dataplane/iptables/
+https://serenafeng.github.io/2020/03/26/kube-proxy-in-iptables-mode/
 
 
 ### Considerations 
