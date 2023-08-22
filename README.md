@@ -1,7 +1,15 @@
 # k8s-cni-bash-plugin
 Creating bash cni plugin for internal lab
 
-Before
+
+## Assumptions:
+
+1. Using only prepared images for kubernetes node.
+2. Not using any additional packaged
+3. Installing only via kubernetes objects 
+
+
+## Before
 
 ```console
 kubectl get nodes
@@ -46,7 +54,18 @@ kube-system   metrics-server-657f59948c-f7tvh                0/2     Pending   0
 </pre>
 
 
-After
+## Install
+
+```console
+kubectl apply -R -f kubernetes/manifests
+```
+
+<pre>
+  TODO
+</pre>
+
+## After
+
 ```console
 kubectl get nodes
 kubectl get node -o custom-columns='NAME:.metadata.name,STATUS:.status.conditions[?(@.type=="Ready")].message'
