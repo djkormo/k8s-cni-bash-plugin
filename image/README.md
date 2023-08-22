@@ -3,7 +3,9 @@
 
 ### Networking model
 https://sookocheff.com/post/kubernetes/understanding-kubernetes-networking-model/
+
 https://medium.com/@betz.mark/understanding-kubernetes-networking-pods-7117dd28727
+
 https://linuxhint.com/use-linux-network-namespace/
 
 ### CNI and kubelet
@@ -21,6 +23,7 @@ https://github.com/s-matyukevich/bash-cni-plugin/blob/master/bash-cni
 ### Movie
 
 https://www.youtube.com/watch?v=zmYxdtFzK6s
+
 https://www.youtube.com/watch?v=YjjrQiJOyME
 
 
@@ -40,6 +43,7 @@ https://github.com/learnk8s/advanced-networking/blob/master/my-cni-plugin
 ### iptables and kubernetes
 
 https://www.tkng.io/services/clusterip/dataplane/iptables/
+
 https://serenafeng.github.io/2020/03/26/kube-proxy-in-iptables-mode/
 
 
