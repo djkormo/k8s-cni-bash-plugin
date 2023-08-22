@@ -4,7 +4,7 @@
 ### Networking model
 https://sookocheff.com/post/kubernetes/understanding-kubernetes-networking-model/
 https://medium.com/@betz.mark/understanding-kubernetes-networking-pods-7117dd28727
-
+https://linuxhint.com/use-linux-network-namespace/
 
 ### CNI and kubelet
 https://www.waytoeasylearn.com/learn/cni-in-kubernetes/
