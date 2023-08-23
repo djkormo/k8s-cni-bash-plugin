@@ -4,9 +4,9 @@ Creating bash cni plugin for internal lab
 
 ## Assumptions:
 
-1. Using only prepared images for kubernetes node.
-2. Not using any additional packaged
-3. Installing only via kubernetes objects 
+1. Using only prepared images for kubernetes nodes.
+2. Not using any additional packages.
+3. Installing only via kubernetes objects. 
 
 
 ## Before
