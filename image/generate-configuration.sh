@@ -9,6 +9,9 @@ SERVICEACCOUNT_TOKEN=$(cat $SERVICE_ACCOUNT_PATH/token)
 KUBE_CACERT=${KUBE_CACERT:-$SERVICE_ACCOUNT_PATH/ca.crt}
 KUBERNETES_SERVICE_PROTOCOL=${KUBERNETES_SERVICE_PROTOCOL-https}
 
+echo "KUBERNETES_SERVICE_PROTOCOL: $KUBERNETES_SERVICE_PROTOCOL"
+echo "KUBERNETES_SERVICE_PORT: $KUBERNETES_SERVICE_PORT"
+
 function exit_with_message() {
     echo "$1"
     exit 1
@@ -40,7 +43,9 @@ fi
 # TODO
 # Listening all nodes, numbering tham if spec.podCIDR is not set 
 
-node_names=$(curl --cacert "${KUBE_CACERT}" --header "Authorization: Bearer ${SERVICEACCOUNT_TOKEN}" -X GET "${KUBERNETES_SERVICE_PROTOCOL}://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}/api/v1/nodes/" | jq  '.items[].metadata.name' )
+node_names=$(curl --cacert "${KUBE_CACERT}" --header "Authorization: Bearer ${SERVICEACCOUNT_TOKEN}" -X GET "${KUBERNETES_SERVICE_PROTOCOL}://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}/api/v1/nodes/" | jq -rM '.items[].metadata.name' )
+
+echo "node_names: $node_names"
 
 mapfile -t nodenumber < <( echo $node_names )
 
@@ -52,6 +57,8 @@ done
 NODE_RESOURCE_PATH="${KUBERNETES_SERVICE_PROTOCOL}://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}/api/v1/nodes/${CNI_HOSTNAME}"
 
 # TODO path  node with .spec.podCIDR
+
+# kubectl patch node aks-nodepool1-38495471-vmss000006  -p '{"spec":{"podCIDR":"10.244.1.0/24"}}'  --dry-run=server -v9
 
 NODE_SUBNET=$(curl --cacert "${KUBE_CACERT}" --header "Authorization: Bearer ${SERVICEACCOUNT_TOKEN}" -X GET "${NODE_RESOURCE_PATH}" | jq ".spec.podCIDR")
 
