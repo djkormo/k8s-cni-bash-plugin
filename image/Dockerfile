@@ -19,3 +19,4 @@ COPY k8s-cni-bash-plugin.env k8s-cni-bash-plugin.env
 RUN chmod +x /cni/*.bash
 RUN chmod +x /cni/*.sh
 
+
