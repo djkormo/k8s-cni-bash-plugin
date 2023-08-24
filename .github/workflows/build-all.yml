@@ -8,7 +8,7 @@ on:
       - 'image/*.conf'
       - '**.bash'
       - '**.sh'
-      - 'Dockerfile'
+      - 'image/Dockerfile'
 
 jobs:
 
