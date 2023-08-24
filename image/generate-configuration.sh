@@ -22,13 +22,14 @@ then
 fi
 
 # exit if the NODE_NAME environment variable is not set.
-if [[ -z "${NODE_NAME}" ]];
+if [[ -z "${CNI_HOSTNAME}" ]];
 then
     exit_with_message "NODE_NAME not set."
 fi
 
-
-NODE_RESOURCE_PATH="${KUBERNETES_SERVICE_PROTOCOL}://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}/api/v1/nodes/${NODE_NAME}"
+# TODO
+# Listening all nodes, numbering tham if spec.podCIDR is not set 
+NODE_RESOURCE_PATH="${KUBERNETES_SERVICE_PROTOCOL}://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}/api/v1/nodes/${CNI_HOSTNAME}"
 NODE_SUBNET=$(curl --cacert "${KUBE_CACERT}" --header "Authorization: Bearer ${SERVICEACCOUNT_TOKEN}" -X GET "${NODE_RESOURCE_PATH}" | jq ".spec.podCIDR")
 
 # Check if the node subnet is valid IPv4 CIDR address
