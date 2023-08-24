@@ -9,22 +9,32 @@ SERVICEACCOUNT_TOKEN=$(cat $SERVICE_ACCOUNT_PATH/token)
 KUBE_CACERT=${KUBE_CACERT:-$SERVICE_ACCOUNT_PATH/ca.crt}
 KUBERNETES_SERVICE_PROTOCOL=${KUBERNETES_SERVICE_PROTOCOL-https}
 
+function exit_with_message() {
+    echo "$1"
+    exit 1
+}
+
 # Check if we're running as a k8s pod.
 if [ -f "$SERVICE_ACCOUNT_PATH/token" ];
 then
     # some variables should be automatically set inside a pod
     if [ -z "${KUBERNETES_SERVICE_HOST}" ]; then
-        exit_with_message "KUBERNETES_SERVICE_HOST not set"
+        echo "KUBERNETES_SERVICE_HOST not set"
+        exit 1
     fi
     if [ -z "${KUBERNETES_SERVICE_PORT}" ]; then
-        exit_with_message "KUBERNETES_SERVICE_PORT not set"
+        echo "KUBERNETES_SERVICE_PORT not set"
+        exit 1
     fi
 fi
 
-# exit if the NODE_NAME environment variable is not set.
+
+# exit if the CNI_HOSTNAME environment variable is not set.
 if [[ -z "${CNI_HOSTNAME}" ]];
 then
-    exit_with_message "NODE_NAME not set."
+    echo "CNI_HOSTNAME not set."
+    exit 1
+    
 fi
 
 # TODO
@@ -38,13 +48,15 @@ if [[ ${NODE_SUBNET} =~ ${IPV4_CIDR_REGEX} ]]
 then
     echo "${NODE_SUBNET} is a valid IPv4 CIDR address."
 else
-    exit_with_message "${NODE_SUBNET} is not a valid IPv4 CIDR address!"
+    echo "${NODE_SUBNET} is not a valid IPv4 CIDR address!"
+    exit 1
 fi
 
 # exit if the NODE_NAME environment variable is not set.
 if [[ -z "${CNI_NETWORK_CONFIG}" ]];
 then
-    exit_with_message "CNI_NETWORK_CONFIG not set."
+    echo "CNI_NETWORK_CONFIG not set."
+    exit 1
 fi
 
 #TMP_CONF='/minicni.conf.tmp'
