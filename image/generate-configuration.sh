@@ -54,21 +54,21 @@ for i in "${!nodenumber[@]}"; do
 done
 
 
-NODE_RESOURCE_PATH="${KUBERNETES_SERVICE_PROTOCOL}://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}/api/v1/nodes/${CNI_HOSTNAME}"
+node_resource_path="${KUBERNETES_SERVICE_PROTOCOL}://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}/api/v1/nodes/${CNI_HOSTNAME}"
 
 # TODO path  node with .spec.podCIDR
 
 # kubectl patch node aks-nodepool1-38495471-vmss000006  -p '{"spec":{"podCIDR":"10.244.1.0/24"}}'  --dry-run=server -v9
 
-NODE_SUBNET=$(curl --cacert "${KUBE_CACERT}" --header "Authorization: Bearer ${SERVICEACCOUNT_TOKEN}" -X GET "${NODE_RESOURCE_PATH}" | jq ".spec.podCIDR")
+node_subnet=$(curl --cacert "${KUBE_CACERT}" --header "Authorization: Bearer ${SERVICEACCOUNT_TOKEN}" -X GET "${node_resource_path}" | jq ".spec.podCIDR")
 
 # Check if the node subnet is valid IPv4 CIDR address
-IPV4_CIDR_REGEX="(((25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?))(\/([8-9]|[1-2][0-9]|3[0-2]))([^0-9.]|$)"
-if [[ ${NODE_SUBNET} =~ ${IPV4_CIDR_REGEX} ]]
+ipv4_cidr_regex="(((25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?))(\/([8-9]|[1-2][0-9]|3[0-2]))([^0-9.]|$)"
+if [[ ${node_subnet} =~ ${ipv4_cidr_regex} ]]
 then
-    echo "${NODE_SUBNET} is a valid IPv4 CIDR address."
+    echo "${node_subnet} is a valid IPv4 CIDR address."
 else
-    echo "${NODE_SUBNET} is not a valid IPv4 CIDR address!"
+    echo "${node_subnet} is not a valid IPv4 CIDR address!"
     exit 1
 fi
 
