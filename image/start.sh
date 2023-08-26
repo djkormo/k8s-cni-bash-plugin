@@ -2,6 +2,50 @@
 
 set -o pipefail
 
+
+# The environment variables used to connect to the kube-apiserver
+SERVICE_ACCOUNT_PATH=/var/run/secrets/kubernetes.io/serviceaccount
+SERVICEACCOUNT_TOKEN=$(cat $SERVICE_ACCOUNT_PATH/token)
+KUBE_CACERT=${KUBE_CACERT:-$SERVICE_ACCOUNT_PATH/ca.crt}
+KUBERNETES_SERVICE_PROTOCOL=${KUBERNETES_SERVICE_PROTOCOL-https}
+echo "KUBERNETES_SERVICE_HOST: $KUBERNETES_SERVICE_HOST"
+echo "KUBERNETES_SERVICE_PROTOCOL: $KUBERNETES_SERVICE_PROTOCOL"
+echo "KUBERNETES_SERVICE_PORT: $KUBERNETES_SERVICE_PORT"
+
+function exit_with_message() {
+    echo "$1"
+    exit 1
+}
+
+function set_node_podcidr()
+{
+curl -X PATCH "$1" 
+     -H 'Content-Type: application/json'
+     -d '{"spec":{"podCIDR":"$2"}}'
+}
+
+# Check if we're running as a k8s pod.
+if [ -f "$SERVICE_ACCOUNT_PATH/token" ];
+then
+    # some variables should be automatically set inside a pod
+    if [ -z "${KUBERNETES_SERVICE_HOST}" ]; then
+        echo "KUBERNETES_SERVICE_HOST not set"
+        exit 1
+    fi
+    if [ -z "${KUBERNETES_SERVICE_PORT}" ]; then
+        echo "KUBERNETES_SERVICE_PORT not set"
+        exit 1
+    fi
+fi
+
+# exit if the CNI_HOSTNAME environment variable is not set.
+if [[ -z "${CNI_HOSTNAME}" ]];
+then
+    echo "CNI_HOSTNAME not set."
+    exit 1
+    
+fi
+
 echo "Initialising CNI bash plugin"
 echo "PATH: ${PATH}"
 node_number=${CNI_HOSTNAME:(-1)}
