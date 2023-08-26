@@ -43,7 +43,7 @@ fi
 # TODO
 # Listening all nodes, numbering tham if spec.podCIDR is not set 
 
-node_names=$(curl --cacert "${KUBE_CACERT}" --header "Authorization: Bearer ${SERVICEACCOUNT_TOKEN}" -X GET "${KUBERNETES_SERVICE_PROTOCOL}://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}/api/v1/nodes/" | jq -rM '.items[].metadata.name' )
+node_names=$(curl --cacert "${KUBE_CACERT}" --header "Authorization: Bearer ${SERVICEACCOUNT_TOKEN}" -X GET "${KUBERNETES_SERVICE_PROTOCOL}://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}/api/v1/nodes/" | jq -rM '.items[] |"\(.metadata.name) \(.spec.podCIDR)"' )
 
 echo "node_names: $node_names"
 
