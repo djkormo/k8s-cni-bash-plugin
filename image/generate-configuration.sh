@@ -47,7 +47,7 @@ node_names=$(curl --cacert "${KUBE_CACERT}" --header "Authorization: Bearer ${SE
 
 echo "node_names: $node_names"
 
-mapfile -t nodenumber < <( echo $node_names )
+mapfile -t nodenumber < <( echo "$node_names" )
 
 for i in "${!nodenumber[@]}"; do
     printf "$i ${nodenumber[i]} \n"
