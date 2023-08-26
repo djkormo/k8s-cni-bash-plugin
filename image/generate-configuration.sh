@@ -17,6 +17,13 @@ function exit_with_message() {
     exit 1
 }
 
+function set_node_podcidr()
+{
+curl -X PATCH "$1" 
+     -H 'Content-Type: application/json'
+     -d '{"spec":{"podCIDR":"$2"}}'
+}
+
 # Check if we're running as a k8s pod.
 if [ -f "$SERVICE_ACCOUNT_PATH/token" ];
 then
@@ -55,6 +62,14 @@ done
 
 
 node_resource_path="${KUBERNETES_SERVICE_PROTOCOL}://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}/api/v1/nodes/${CNI_HOSTNAME}"
+
+node_number=${CNI_HOSTNAME:(-1)}
+echo "Node $CNI_HOSTNAME number: ${node_number}"
+
+curl -X PATCH "${node_resource_path}" 
+     -H 'Content-Type: application/json'
+     -d '{"spec":{"podCIDR":"10.244.${node_number}.0/24"}}'
+
 
 # TODO path  node with .spec.podCIDR
 
