@@ -68,7 +68,7 @@ echo "Node $CNI_HOSTNAME number: ${node_number}"
 node_pod_cidr="10.244.${node_number}.0/24"
 echo "patching node CNI_HOSTNAME with podCIDR: $node_pod_cidr"
 
-curl_patch="curl --cacert \"${KUBE_CACERT}\" --request PATCH "${node_resource_path}"  --header 'Content-Type: application/json-patch+json' --header \"Authorization: Bearer ${SERVICEACCOUNT_TOKEN}\"  --data '[{\"op\": \"replace\", \"path\": \"/spec/podCIDR\", \"value\":"node_pod_cidr"}]'"
+curl_patch="curl --cacert \"${KUBE_CACERT}\" --request PATCH "${node_resource_path}"  --header 'Content-Type: application/json-patch+json' --header \"Authorization: Bearer ${SERVICEACCOUNT_TOKEN}\"  --data '[{\"op\": \"replace\", \"path\": \"/spec/podCIDR\", \"value\":\"$node_pod_cidr\"}]'"
 
 echo "curl_patch: $curl_patch"
 
