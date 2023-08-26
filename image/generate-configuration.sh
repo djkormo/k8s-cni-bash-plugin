@@ -63,12 +63,24 @@ done
 
 node_resource_path="${KUBERNETES_SERVICE_PROTOCOL}://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}/api/v1/nodes/${CNI_HOSTNAME}"
 
-node_number=${CNI_HOSTNAME:(-2)}
+node_number=${CNI_HOSTNAME:(-3)}
 echo "Node $CNI_HOSTNAME number: ${node_number}"
 # converting to int
 node_number=$(expr $node_number + 0)
 echo "Node $CNI_HOSTNAME number: ${node_number}"
 node_pod_cidr="10.244.${node_number}.0/24"
+
+# Check if the node subnet is valid IPv4 CIDR address
+ipv4_cidr_regex="(((25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?))(\/([8-9]|[1-2][0-9]|3[0-2]))([^0-9.]|$)"
+
+if [[ ${node_pod_cidr} =~ ${ipv4_cidr_regex} ]]
+then
+    echo "${node_pod_cidr} is a valid IPv4 CIDR address."
+else
+    echo "${node_pod_cidr} is not a valid IPv4 CIDR address!"
+    exit 1
+fi
+
 echo "patching node CNI_HOSTNAME with podCIDR: $node_pod_cidr"
 
 curl_patch="curl --cacert \"${KUBE_CACERT}\" --request PATCH "${node_resource_path}"  --header 'Content-Type: application/json-patch+json' --header \"Authorization: Bearer ${SERVICEACCOUNT_TOKEN}\"  --data '[{\"op\": \"replace\", \"path\": \"/spec/podCIDR\", \"value\":\"$node_pod_cidr\"}]'"
@@ -83,8 +95,7 @@ eval $curl_patch
 
 node_subnet=$(curl --cacert "${KUBE_CACERT}" --header "Authorization: Bearer ${SERVICEACCOUNT_TOKEN}" -X GET "${node_resource_path}" | jq ".spec.podCIDR")
 
-# Check if the node subnet is valid IPv4 CIDR address
-ipv4_cidr_regex="(((25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?))(\/([8-9]|[1-2][0-9]|3[0-2]))([^0-9.]|$)"
+
 if [[ ${node_subnet} =~ ${ipv4_cidr_regex} ]]
 then
     echo "${node_subnet} is a valid IPv4 CIDR address."
