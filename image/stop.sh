@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 echo "Destroying CNI bash plugin"
 rm -f /etc/cni/net.d/10-k8s-cni-bash-plugin.conf
