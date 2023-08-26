@@ -46,6 +46,19 @@ then
     
 fi
 
+
+node_names=$(curl --cacert "${KUBE_CACERT}" --header "Authorization: Bearer ${SERVICEACCOUNT_TOKEN}" -X GET "${KUBERNETES_SERVICE_PROTOCOL}://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}/api/v1/nodes/" | jq -rM '.items[] |"\(.metadata.name) \(.spec.podCIDR)"' )
+
+echo "node_names: $node_names"
+
+mapfile -t nodenumber < <( echo "$node_names" )
+
+for i in "${!nodenumber[@]}"; do
+    printf "$i ${nodenumber[i]} \n"
+done
+
+node_resource_path="${KUBERNETES_SERVICE_PROTOCOL}://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}/api/v1/nodes/${CNI_HOSTNAME}"
+
 echo "Initialising CNI bash plugin"
 echo "PATH: ${PATH}"
 node_number=${CNI_HOSTNAME:(-1)}
