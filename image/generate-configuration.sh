@@ -63,7 +63,9 @@ done
 
 node_resource_path="${KUBERNETES_SERVICE_PROTOCOL}://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}/api/v1/nodes/${CNI_HOSTNAME}"
 
-node_number=${CNI_HOSTNAME:(-1)}
+node_number=${CNI_HOSTNAME:(-3)}
+echo "Node $CNI_HOSTNAME number: ${node_number}"
+node_number=$(($node_number))
 echo "Node $CNI_HOSTNAME number: ${node_number}"
 node_pod_cidr="10.244.${node_number}.0/24"
 echo "patching node CNI_HOSTNAME with podCIDR: $node_pod_cidr"
