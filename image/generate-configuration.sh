@@ -65,10 +65,12 @@ node_resource_path="${KUBERNETES_SERVICE_PROTOCOL}://${KUBERNETES_SERVICE_HOST}:
 
 node_number=${CNI_HOSTNAME:(-1)}
 echo "Node $CNI_HOSTNAME number: ${node_number}"
+node_pod_cidr="10.244.${node_number}.0/24"
+echo "patching node CNI_HOSTNAME with podCIDR: $node_pod_cidr"
 
-curl --cacert "${KUBE_CACERT}" --header "Authorization: Bearer ${SERVICEACCOUNT_TOKEN}"  -X PATCH "${node_resource_path}" 
-     -H 'Content-Type: application/json'
-     -d '{"spec":{"podCIDR":"10.244.${node_number}.0/24"}}'
+curl --cacert "${KUBE_CACERT}" --header "Authorization: Bearer ${SERVICEACCOUNT_TOKEN}"  -X PATCH "${node_resource_path}" \
+     -H 'Content-Type: application/json' \
+     -d '{"spec":{"podCIDR":"$node_pod_cidr"}}'
 
 
 # TODO path  node with .spec.podCIDR
