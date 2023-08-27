@@ -52,3 +52,7 @@ https://serenafeng.github.io/2020/03/26/kube-proxy-in-iptables-mode/
 https://www.linuxconcept.com/custom-solutions-crafting-your-own-cni-plugin-for-kubernetes
 
 https://ronaknathani.com/blog/2020/08/how-a-kubernetes-pod-gets-an-ip-address/
+
+### Misc
+https://www.softwarefactory-project.io/how-to-manually-update-kubernetes-resources.html
+
