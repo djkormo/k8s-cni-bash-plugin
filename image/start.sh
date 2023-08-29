@@ -47,9 +47,12 @@ then
 fi
 
 
+# TODO
+# Listening all nodes, numbering tham if spec.podCIDR is not set 
+
 node_names=$(curl --cacert "${KUBE_CACERT}" --header "Authorization: Bearer ${SERVICEACCOUNT_TOKEN}" -X GET "${KUBERNETES_SERVICE_PROTOCOL}://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}/api/v1/nodes/" | jq -rM '.items[] |"\(.metadata.name) \(.spec.podCIDR)"' )
 
-#echo "node_names:\n$node_names"
+echo "node_names: $node_names"
 
 mapfile -t nodenumber < <( echo "$node_names" )
 
@@ -57,17 +60,49 @@ for i in "${!nodenumber[@]}"; do
     printf "$i ${nodenumber[i]} \n"
 done
 
+
 node_resource_path="${KUBERNETES_SERVICE_PROTOCOL}://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}/api/v1/nodes/${CNI_HOSTNAME}"
 
-echo "node_resource_path: $node_resource_path"
-
-echo "Initialising CNI bash plugin"
-
-node_number=${CNI_HOSTNAME:(-1)}
+node_number=${CNI_HOSTNAME:(-3)}
 echo "Node $CNI_HOSTNAME number: ${node_number}"
-#convert to int
-#node_number=$(($node_number))
-#echo "Node $CNI_HOSTNAME number: ${node_number}"
+# converting to int
+node_number=$(expr $node_number + 0)
+echo "Node $CNI_HOSTNAME number: ${node_number}"
+node_pod_cidr="10.244.${node_number}.0/24"
+
+# Check if the node subnet is valid IPv4 CIDR address
+ipv4_cidr_regex="(((25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?))(\/([8-9]|[1-2][0-9]|3[0-2]))([^0-9.]|$)"
+
+if [[ ${node_pod_cidr} =~ ${ipv4_cidr_regex} ]]
+then
+    echo "${node_pod_cidr} is a valid IPv4 CIDR address."
+else
+    echo "${node_pod_cidr} is not a valid IPv4 CIDR address!"
+    exit 1
+fi
+
+echo "patching node CNI_HOSTNAME with podCIDR: $node_pod_cidr"
+
+curl_patch="curl --cacert \"${KUBE_CACERT}\" --request PATCH "${node_resource_path}"  --header 'Content-Type: application/json-patch+json' --header \"Authorization: Bearer ${SERVICEACCOUNT_TOKEN}\"  --data '[{\"op\": \"replace\", \"path\": \"/spec/podCIDR\", \"value\":\"$node_pod_cidr\"}]'"
+
+echo "curl_patch: $curl_patch"
+
+eval $curl_patch
+
+# TODO path  node with .spec.podCIDR
+
+# kubectl patch node aks-nodepool1-38495471-vmss000006  -p '{"spec":{"podCIDR":"10.244.1.0/24"}}'  --dry-run=server -v9
+
+node_subnet=$(curl --cacert "${KUBE_CACERT}" --header "Authorization: Bearer ${SERVICEACCOUNT_TOKEN}" -X GET "${node_resource_path}" | jq ".spec.podCIDR")
+
+
+if [[ ${node_subnet} =~ ${ipv4_cidr_regex} ]]
+then
+    echo "${node_subnet} is a valid IPv4 CIDR address."
+else
+    echo "${node_subnet} is not a valid IPv4 CIDR address!"
+    exit 1
+fi
 
 echo "======== Configuration ========="
 #export $(cat k8s-cni-bash-plugin.env)
@@ -91,7 +126,7 @@ echo "========== Checking log file ${CNI_LOGFILE} =========="
 echo "========== Checking log file ${CNI_LOGFILE} =========="
 
 
-cp /cni/cni-add-check.bash /tmp/k8s-cni-bash-plugin/cni-add-check.bash
-cp /cni/cni-del-check.bash /tmp/k8s-cni-bash-plugin/cni-del-check.bash
-cp /cni/iptables-setup.bash /tmp/k8s-cni-bash-plugin/iptables-setup.bash
+cp /cni/cni-add-check.sh /tmp/k8s-cni-bash-plugin/cni-add-check.sh
+cp /cni/cni-del-check.sh /tmp/k8s-cni-bash-plugin/cni-del-check.sh
+cp /cni/iptables-setup.sh /tmp/k8s-cni-bash-plugin/iptables-setup.sh
 
