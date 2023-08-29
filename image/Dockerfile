@@ -6,17 +6,16 @@ RUN apk --no-cache add curl bash jq nmap iptables util-linux
 RUN mkdir -p /cni
 WORKDIR /cni
 
-COPY k8s-api-check.bash k8s-api-check.bash
-COPY k8s-cni-bash-plugin.bash k8s-cni-bash-plugin.bash
+COPY k8s-api-check.sh k8s-api-check.sh
+COPY k8s-cni-bash-plugin.sh k8s-cni-bash-plugin.sh
 COPY start.sh start.sh
 COPY stop.sh stop.sh
-COPY cni-add-check.bash cni-add-check.bash 
-COPY cni-del-check.bash cni-del-check.bash 
-COPY iptables-setup.bash iptables-setup.bash 
+COPY cni-add-check.sh cni-add-check.sh 
+COPY cni-del-check.sh cni-del-check.sh 
+COPY iptables-setup.bash iptables-setup.sh 
 COPY generate-configuration.sh generate-configuration.sh
 COPY k8s-cni-bash-plugin.env k8s-cni-bash-plugin.env 
 
-RUN chmod +x /cni/*.bash
 RUN chmod +x /cni/*.sh
 
 
