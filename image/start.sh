@@ -19,9 +19,9 @@ function exit_with_message() {
 
 function set_node_podcidr()
 {
-curl -X PATCH "$1" 
-     -H 'Content-Type: application/json'
-     -d '{"spec":{"podCIDR":"$2"}}'
+curl_patch="curl --cacert \"${KUBE_CACERT}\" --request PATCH "$1"  --header 'Content-Type: application/json-patch+json' --header \"Authorization: Bearer ${SERVICEACCOUNT_TOKEN}\"  --data '[{\"op\": \"replace\", \"path\": \"/spec/podCIDR\", \"value\":\"$2\"}]'"
+echo "curl_patch: $curl_patch"
+eval $curl_patch
 }
 
 # Check if we're running as a k8s pod.
