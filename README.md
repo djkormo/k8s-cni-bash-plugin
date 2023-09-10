@@ -8,6 +8,29 @@ Creating bash cni plugin for internal lab
 2. Not using any additional packages.
 3. Installing only via kubernetes objects. 
 
+### Base configuration
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: k8s-cni-bash-plugin-configmap
+  namespace: kube-system
+data:
+  10-k8s-cni-bash-plugin.conf: |
+    {
+        "cniVersion": "0.3.1",
+        "name": "k8s-cni-bash-plugin",
+        "type": "k8s-cni-bash-plugin",
+        "bridge": "cni0",
+        "host_network": "10.244.0.0/16",
+        "pod_network": "10.240.0.0/16",
+        "pod_cidr": "10.240.x.0/24",
+        "service_cidr": "10.0.0.0/16",
+        "coredns_ip": "10.0.0.11"
+
+    }
+```
+
 
 ## Before
 
