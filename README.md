@@ -37,7 +37,7 @@ data:
 ```console
 kubectl get nodes
 kubectl get node -o custom-columns='NAME:.metadata.name,STATUS:.status.conditions[?(@.type=="Ready")].message'
-kubectl  get pod -o wide  -A
+kubectl get pod -o wide  -A
 ```
 
 <pre>
@@ -92,7 +92,7 @@ kubectl apply -R -f kubernetes/manifests
 ```console
 kubectl get nodes
 kubectl get node -o custom-columns='NAME:.metadata.name,STATUS:.status.conditions[?(@.type=="Ready")].message,PODCIDR:.spec.podCIDR'
-kubectl  get pod -o wide  -A
+kubectl get pod -o wide  -A
 
 kubectl top nodes
 kubectl top pod -A
