@@ -65,7 +65,7 @@ node_resource_path="${KUBERNETES_SERVICE_PROTOCOL}://${KUBERNETES_SERVICE_HOST}:
 # take last four characters
 node_number=${CNI_HOSTNAME:(-4)}
 # convert to hex
-node_number=$(echo "${node_number}"| tr -d '\n' | xxd -ps -c 255 )
+node_number=$(echo "${node_number}"| tr -d '\n' | xxd -ps -c 200 )
 # convert to decimal
 node_number=$((16#$node_number))
 # modulu 255
