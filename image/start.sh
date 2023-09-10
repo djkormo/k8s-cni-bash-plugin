@@ -113,8 +113,11 @@ else
     exit 1
 fi
 
+set -u
+set -e 
+
 echo "======== Configuration ========="
-#export $(cat k8s-cni-bash-plugin.env)
+
 printenv | grep CNI
 echo "======== Configuration ========="
 # included via configmap
@@ -125,7 +128,7 @@ sed -i "s/.x./.$node_number./" /etc/cni/net.d/10-k8s-cni-bash-plugin.conf
 echo "======== conf template ater changing node number ========="
 cat /etc/cni/net.d/10-k8s-cni-bash-plugin.conf
 echo "====== Installed cni plugings ==========="
-cp /cni/k8s-cni-bash-plugin.bash /opt/cni/bin/k8s-cni-bash-plugin
+cp /cni/k8s-cni-bash-plugin.sh /opt/cni/bin/k8s-cni-bash-plugin
 chmod +x /opt/cni/bin/k8s-cni-bash-plugin
 ls -la  /opt/cni/bin/
 echo "====== Installed cni plugings ==========="
