@@ -62,8 +62,14 @@ done
 
 
 node_resource_path="${KUBERNETES_SERVICE_PROTOCOL}://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}/api/v1/nodes/${CNI_HOSTNAME}"
-
-node_number=${CNI_HOSTNAME:(-3)}
+# take last four characters
+node_number=${CNI_HOSTNAME:(-4)}
+# convert to hex
+node_number=$(echo "${node_number}"| tr -d '\n' | xxd -ps -c 255 )
+# convert to decimal
+node_number=$((16#$node_number))
+# modulu 255
+node_number=$(expr $node_number % 255)
 echo "Node $CNI_HOSTNAME number: ${node_number}"
 # converting to int
 node_number=$(expr $node_number + 0)
