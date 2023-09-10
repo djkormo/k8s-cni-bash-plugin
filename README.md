@@ -68,7 +68,7 @@ kubectl apply -R -f kubernetes/manifests
 
 ```console
 kubectl get nodes
-kubectl get node -o custom-columns='NAME:.metadata.name,STATUS:.status.conditions[?(@.type=="Ready")].message'
+kubectl get node -o custom-columns='NAME:.metadata.name,STATUS:.status.conditions[?(@.type=="Ready")].message,PODCIDR:.spec.podCIDR'
 kubectl  get pod -o wide  -A
 
 kubectl top nodes
@@ -80,9 +80,9 @@ NAME                                STATUS   ROLES   AGE     VERSION
 aks-nodepool1-38495471-vmss000003   Ready    agent   7h59m   v1.25.11
 aks-nodepool1-38495471-vmss000004   Ready    agent   7h59m   v1.25.11
 
-NAME                                STATUS
-aks-nodepool1-38495471-vmss000003   kubelet is posting ready status. AppArmor enabled
-aks-nodepool1-38495471-vmss000004   kubelet is posting ready status. AppArmor enabled
+NAME                                STATUS                                              PODCIDR
+aks-nodepool1-38495471-vmss000003  kubelet is posting ready status. AppArmor enabled   10.244.48.0/24
+aks-nodepool1-38495471-vmss000004  kubelet is posting ready status. AppArmor enabled   10.244.49.0/24
 
 NAMESPACE     NAME                                  READY   STATUS    RESTARTS     AGE     IP            NODE                                NOMINATED NODE   READINESS GATES
 kube-system   cloud-node-manager-4znh7              1/1     Running   0            3m3s    10.224.0.6    aks-nodepool1-38495471-vmss000003   <none>           <none>
