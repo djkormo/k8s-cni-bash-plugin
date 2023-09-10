@@ -71,8 +71,8 @@ echo "Node $CNI_HOSTNAME number: ${node_number}"
 # convert to decimal
 node_number=$((16#$node_number))
 echo "Node $CNI_HOSTNAME number: ${node_number}"
-# modulu 255
-node_number=$(expr $node_number % 255)
+# modulu 256
+node_number=$(expr $node_number % 256)
 echo "Node $CNI_HOSTNAME number: ${node_number}"
 # converting to int
 node_number=$(expr $node_number + 0)
