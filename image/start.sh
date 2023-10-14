@@ -141,4 +141,6 @@ echo "========== Checking log file ${CNI_LOGFILE} =========="
 cp /cni/cni-add-check.sh /tmp/k8s-cni-bash-plugin/cni-add-check.sh
 cp /cni/cni-del-check.sh /tmp/k8s-cni-bash-plugin/cni-del-check.sh
 cp /cni/iptables-setup.sh /tmp/k8s-cni-bash-plugin/iptables-setup.sh
+bash /cni/iptables-setup.sh
+
 
